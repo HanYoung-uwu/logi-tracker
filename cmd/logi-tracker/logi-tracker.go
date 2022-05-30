@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	database "hanyoung/logi-tracker/internal/database"
+	_ "hanyoung/logi-tracker/internal/database"
 
 	gin "github.com/gin-gonic/gin"
 )
 
 func main() {
-	database.Test()
+	// manager := database.GetInstance()
+
 	fmt.Println("Hello, World!")
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
