@@ -1,157 +1,170 @@
 package database
 
 import (
-	"crypto/rand"
 	"database/sql"
+	"errors"
 	"log"
-	"math/big"
 	"sync"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
+
+	"hanyoung/logi-tracker/pkg/utility"
 )
 
 type DataBaseManager struct {
 	db *sql.DB
 }
 
+type Account struct {
+	Name       string
+	Permission int
+	Id         int64
+	Clan       string
+}
+
 var lock = &sync.Mutex{}
-var db *DataBaseManager
+var singleton *DataBaseManager
 
 func initDatabase() *sql.DB {
 	m_db, _ := sql.Open("sqlite3",
 		"test.sqlite3")
 	sqlStmt := `
-	CREATE TABLE IF NOT EXISTS location (id INTEGER PRIMARY KEY AUTOINCREMENT, location TEXT, time DATETIME, clan TEXT);
-	CREATE TABLE IF NOT EXISTS account (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, password TEXT, admin INTEGER, clan TEXT);
-	CREATE TABLE IF NOT EXISTS salts (id INTEGER PRIMARY KEY, salt TEXT);
-	CREATE TABLE IF NOT EXISTS item (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, location TEXT, sum INTEGER, clan TEXT);
+	CREATE TABLE IF NOT EXISTS location (location TEXT PRIMARY KEY, time DATETIME, clan TEXT, code TEXT);
+	CREATE TABLE IF NOT EXISTS account (name TEXT PRIMARY KEY, password TEXT, permission INTEGER, clan TEXT);
+	CREATE TABLE IF NOT EXISTS salts (name TEXT PRIMARY KEY, salt TEXT);
+	CREATE TABLE IF NOT EXISTS item (type TEXT, location TEXT, sum INTEGER, clan TEXT);
 	`
 	m_db.Exec(sqlStmt)
 	return m_db
 }
 
 func GetInstance() *DataBaseManager {
-	if db == nil {
+	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()
-		if db == nil {
-			db = &DataBaseManager{initDatabase()}
+		if singleton == nil {
+			singleton = &DataBaseManager{initDatabase()}
 		}
 	}
-	return db
+	return singleton
 }
 
-func (manager DataBaseManager) InsertItem(location string, item_type string, sum int, clan string) {
+func (manager *DataBaseManager) InsertItem(location string, item_type string, sum int, clan string) {
 	tx, err := manager.db.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	stmt, err := tx.Prepare("insert into item(location, type, sum, clan) values(?, ?, ?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 	stmt.Exec(location, item_type, sum, clan)
 	err = tx.Commit()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
 
-func (manager DataBaseManager) CreateStockpile(location string, clan string) {
+func (manager *DataBaseManager) CreateStockpile(location string, clan string) {
 	tx, err := manager.db.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	stmt, err := tx.Prepare("insert into location(location, time, clan) values(?, ?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 	stmt.Exec(location, time.Now().Format(time.RFC3339), clan)
 	err = tx.Commit()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
 
-func (manager DataBaseManager) AddAccount(name string, password string, clan string, admin int) {
+func (manager *DataBaseManager) AddAccount(name string, password string, clan string, permission int) {
 	// 0 is super admin, 1 is clan admin, 2 is ordinary memenber
-	if admin < 0 || admin > 2 {
-		log.Panic("unexpected admin value: ", admin)
+	if permission < 0 || permission > 2 {
+		log.Panic("unexpected permission value: ", permission)
 	}
 
-	salt := randBytes(50)
+	salt := utility.RandBytes(256)
 
 	hashedPassword, err := bcrypt.GenerateFromPassword(append(salt, password...), bcrypt.DefaultCost)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	tx, err := manager.db.Begin()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
-	stmt, err := tx.Prepare("insert into account(name, password, admin, clan) values(?, ?, ?, ?) RETURNING id")
+	stmt, err := tx.Prepare("insert into account(name, password, permission, clan) values(?, ?, ?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
-	result, err := stmt.Exec(name, hashedPassword, admin, clan)
+	_, err = stmt.Exec(name, hashedPassword, permission, clan)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
-	id, err := result.LastInsertId()
-
+	stmt, err = tx.Prepare("insert into salts(name, salt) values(?, ?)")
 	if err != nil {
-		log.Fatal(err)
-	}
-	err = tx.Commit()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tx, err = manager.db.Begin()
-	if err != nil {
-		log.Fatal(err)
-	}
-	stmt, err = tx.Prepare("insert into salts(id, salt) values(?, ?)")
-	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, salt)
+	_, err = stmt.Exec(name, salt)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	err = tx.Commit()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 }
 
-func randBytes(l int) []byte {
-	store := "asdfghjkl;'qwertyuiop[]1234567890-=zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\\\"|ZXCVBNM<>?!@#$%^&*()_+"
-	maxLen := len(store)
-	result := make([]byte, l)
-	i := 0
-	for {
-		if i == l {
-			break
-		}
-		p, err := rand.Int(rand.Reader, big.NewInt(int64(maxLen)))
-		if err != nil {
-			log.Fatal(err)
-		}
-		result[i] = store[p.Int64()]
-		i += 1
+var ErrorNoAccount = errors.New("no account found")
+var ErrorIncorrectPassword = errors.New("incorrect password")
+
+func (m *DataBaseManager) GetAndValidateAccount(name string, password string) (*Account, error) {
+	stmt, err := m.db.Prepare("select id, password, permisson, clan from account where name = ?")
+	if err != nil {
+		log.Panic(err)
 	}
-	return result
+	defer stmt.Close()
+	var id int64
+	var hashedPassword string
+	var clan string
+	var permission int
+	err = stmt.QueryRow(name).Scan(&id, &hashedPassword, &permission, &clan)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			log.Panic(err)
+		}
+		return nil, ErrorNoAccount
+	}
+
+	stmt, err = m.db.Prepare("select salt from account where id = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+	var salt string
+	err = stmt.QueryRow(name).Scan(&salt)
+	if err != nil {
+		log.Panic(err)
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), append([]byte(salt), password...))
+	if err != nil {
+		return nil, ErrorIncorrectPassword
+	}
+	return &Account{name, permission, id, clan}, nil
 }
