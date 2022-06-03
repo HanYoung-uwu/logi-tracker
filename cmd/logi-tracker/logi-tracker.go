@@ -2,20 +2,13 @@ package main
 
 import (
 	"fmt"
-	"hanyoung/logi-tracker/internal/database"
-	"net/http"
+	"hanyoung/logi-tracker/internal/handlers"
+	"hanyoung/logi-tracker/internal/loginmiddleware.go"
 
 	"github.com/gin-gonic/gin"
 )
 
-type CreateUser struct {
-	Name     string `form:"Name" json:"Name" xml:"Name"  binding:"required"`
-	Password string `form:"Password" json:"Password" xml:"Password" binding:"required"`
-}
-
 func main() {
-	// manager := database.GetInstance()
-
 	fmt.Println("Hello, World!")
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
@@ -23,20 +16,13 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.POST("/register", func(c *gin.Context) {
-		var json CreateUser
-		if err := c.ShouldBindJSON(&json); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		if len(json.Password) < 100 {
-			padding := make([]byte, 100-len(json.Password))
-			json.Password = string(append(padding, json.Password...))
-		}
-		database.GetInstance().AddAccount(json.Name, json.Password, "test", 0)
-		c.JSON(200, gin.H{
-			"message": "succeed",
-		})
-	})
+	r.POST("/register", loginmiddleware.CreateUserHandler)
+	r.POST("/login", loginmiddleware.LoginHandler)
+	authorized := r.Group("/user", loginmiddleware.DefaultAuthHandler)
+
+	authorized.GET("/all_items", handlers.GetAllItemsHandler)
+	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
+	authorized.POST("/insert_item", handlers.InsertItemHandler)
+	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)
 	r.Run()
 }
