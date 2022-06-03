@@ -17,11 +17,17 @@ type DataBaseManager struct {
 	db *sql.DB
 }
 
+// 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links
 type Account struct {
 	Name       string
 	Permission int
 	Clan       string
 }
+
+var NormalAccount = 2
+var AdminAccount = 0
+var ClanAdminAccount = 1
+var InvitationLinkAccount = 3
 
 type StockpileItem struct {
 	ItemType string `json:"item"`
@@ -40,7 +46,7 @@ var singleton *DataBaseManager
 
 func initDatabase() *sql.DB {
 	m_db, _ := sql.Open("sqlite3",
-		"test.sqlite3")
+		utility.DatabasePath)
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS location (location TEXT PRIMARY KEY, time DATETIME, clan TEXT, code TEXT);
 	CREATE TABLE IF NOT EXISTS account (name TEXT PRIMARY KEY, password TEXT, permission INTEGER, clan TEXT);
@@ -62,34 +68,74 @@ func GetInstance() *DataBaseManager {
 	return singleton
 }
 
-func (manager *DataBaseManager) InsertItem(location string, item_type string, size int, clan string) {
-	tx, err := manager.db.Begin()
+var ErrorUnableToUpdateItem = errors.New("can't retrieve item, not enough in stockpile to retrieve")
+
+// a negative size means retrieval
+func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size int, clan string) error {
+	tx, err := m.db.Begin()
 	if err != nil {
 		log.Panic(err)
 	}
 
-	stmt, err := tx.Prepare("insert into item(location, type, size, clan) values(?, ?, ?, ?)")
-	if err != nil {
-		log.Panic(err)
-	}
-	defer stmt.Close()
-	stmt.Exec(location, item_type, size, clan)
-
-	stmt, err = tx.Prepare("update location set time=? where location=? and clan=?")
+	// check if we already have this item
+	stmt, err := tx.Prepare("select size from item where clan = ? and location = ? and type = ?")
 	if err != nil {
 		log.Panic(err)
 	}
 	defer stmt.Close()
-	stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
-
-	err = tx.Commit()
+	var number int
+	err = stmt.QueryRow(clan, location, item).Scan(&number)
 	if err != nil {
-		log.Panic(err)
+		// new item
+		if size < 0 {
+			return ErrorUnableToUpdateItem
+		}
+		stmt, err := tx.Prepare("insert into item(location, type, size, clan) values(?, ?, ?, ?)")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(location, item, size, clan)
+
+		// update the stockpile's time as well
+		stmt, err = tx.Prepare("update location set time=? where location=? and clan=?")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
+
+		err = tx.Commit()
+		if err != nil {
+			log.Panic(err)
+		}
+		return nil
+	} else {
+		updatedSize := number + size
+		if updatedSize > 0 {
+			stmt, err := m.db.Prepare("update item set size = ? where clan = ? and location = ? and type = ?")
+			if err != nil {
+				log.Panic(err)
+			}
+			defer stmt.Close()
+			stmt.Exec(updatedSize, clan, location, item)
+			return nil
+		} else if updatedSize == 0 {
+			stmt, err := m.db.Prepare("delete from item where clan = ? and location = ? and type = ?")
+			if err != nil {
+				log.Panic(err)
+			}
+			defer stmt.Close()
+			stmt.Exec(updatedSize, clan, location, item)
+			return nil
+		} else {
+			return ErrorUnableToUpdateItem
+		}
 	}
 }
 
-func (manager *DataBaseManager) CreateStockpile(location string, code string, clan string) {
-	tx, err := manager.db.Begin()
+func (m *DataBaseManager) CreateStockpile(location string, code string, clan string) {
+	tx, err := m.db.Begin()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -106,7 +152,7 @@ func (manager *DataBaseManager) CreateStockpile(location string, code string, cl
 	}
 }
 
-func (manager *DataBaseManager) AddAccount(name string, password string, clan string, permission int) {
+func (m *DataBaseManager) AddAccount(name string, password string, clan string, permission int) {
 	// 0 is super admin, 1 is clan admin, 2 is ordinary memenber
 	if permission < 0 || permission > 2 {
 		log.Panic("unexpected permission value: ", permission)
@@ -119,7 +165,7 @@ func (manager *DataBaseManager) AddAccount(name string, password string, clan st
 		log.Panic(err)
 	}
 
-	tx, err := manager.db.Begin()
+	tx, err := m.db.Begin()
 	if err != nil {
 		log.Panic(err)
 	}

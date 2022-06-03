@@ -53,7 +53,7 @@ func CreateStockpileHandler(c *gin.Context) {
 	c.JSON(http.StatusAccepted, "success")
 }
 
-func InsertItemHandler(c *gin.Context) {
+func InsertOrUpdateItemHandler(c *gin.Context) {
 	account, exists := c.Get("account")
 	if !exists {
 		log.Println("can't get account")
@@ -72,7 +72,7 @@ func InsertItemHandler(c *gin.Context) {
 		return
 	}
 
-	database.GetInstance().InsertItem(json.Location, json.ItemType, json.Size, _account.Clan)
+	database.GetInstance().InsertOrUpdateItem(json.Location, json.ItemType, json.Size, _account.Clan)
 	c.JSON(http.StatusAccepted, "success")
 }
 
