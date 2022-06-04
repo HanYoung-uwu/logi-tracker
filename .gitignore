@@ -1,2 +1,23 @@
-cmd/logi-tracker/logi-tracker
+go/cmd/logi-tracker/logi-tracker
 *.sqlite3
+# dependencies
+ts/node_modules
+ts/.pnp
+.pnp.js
+
+# testing
+ts/coverage
+
+# production
+ts/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
