@@ -17,6 +17,10 @@ type User struct {
 	Password string `form:"Password" json:"Password" xml:"Password" binding:"required"`
 }
 
+type ClanAdminInvitation struct {
+	Clan string `form:"Clan" json:"Clan" xml:"Clan" binding:"required"`
+}
+
 type Token struct {
 	value      string
 	expireTime time.Time
@@ -24,7 +28,7 @@ type Token struct {
 }
 
 type TokenManager struct {
-	tokens map[string]*Token
+	tokens *sync.Map
 }
 
 var singleton *TokenManager
@@ -35,7 +39,7 @@ func GetAccountManager() *TokenManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &TokenManager{make(map[string]*Token)}
+			singleton = &TokenManager{&sync.Map{}}
 		}
 	}
 	return singleton
@@ -45,7 +49,7 @@ func (t *TokenManager) ValidateAccountAndGenerateToken(name string, password str
 	dbMgr := database.GetInstance()
 	account, err := dbMgr.GetAndValidateAccount(name, password)
 	if err != nil {
-		if err == database.ErrorIncorrectPassword {
+		if err == database.ErrorIncorrectPassword || err == database.ErrorNoAccount {
 			return "", err
 		}
 		log.Fatal(err)
@@ -53,43 +57,63 @@ func (t *TokenManager) ValidateAccountAndGenerateToken(name string, password str
 
 	accessCookie := utility.RandBytes(256)
 	for {
-		if _, exists := t.tokens[string(accessCookie)]; exists {
+		if _, exists := t.tokens.LoadOrStore(string(accessCookie), &Token{string(accessCookie), time.Now().Add(1000000000 * 3600 * 24 * 14), account}); exists {
 			accessCookie = utility.RandBytes(256)
 		} else {
 			break
 		}
 	}
 
-	// default 14 day auto login
-	t.tokens[string(accessCookie)] = &Token{string(accessCookie), time.Now().Add(1000000000 * 3600 * 24 * 14), account}
 	return string(accessCookie), nil
 }
 
 var ErrorInvalideToken = errors.New("invalide token")
 
 func (t *TokenManager) GetAccountByToken(token string) (*database.Account, error) {
-	_token, found := t.tokens[token]
-	if !found || _token.expireTime.Before(time.Now()) {
-		delete(t.tokens, token)
-		return nil, ErrorInvalideToken
+	val, found := t.tokens.Load(token)
+	if found {
+		m_token, ok := val.(*Token)
+		if !ok {
+			log.Panic("m_token is not a *Token")
+		}
+		if m_token.expireTime.Before(time.Now()) {
+			t.tokens.Delete(token)
+			return nil, ErrorInvalideToken
+		}
+		return m_token.account, nil
 	}
-	return _token.account, nil
+	return nil, ErrorInvalideToken
 }
 
 func (t *TokenManager) GenerateInvitationToken(clan string) string {
-	account := &database.Account{Name: "tmp", Permission: 3, Clan: clan}
+	account := &database.Account{Name: "tmp", Permission: database.InvitationLinkAccount, Clan: clan}
 
 	token := utility.RandBytes(92)
 	for {
-		if _, exists := t.tokens[string(token)]; exists {
+		// invitation links are only valid for one day
+		if _, exists := t.tokens.LoadOrStore(string(token), &Token{string(token), time.Now().Add(1000000000 * 3600 * 24), account}); exists {
 			token = utility.RandBytes(92)
 		} else {
 			break
 		}
 	}
 
-	// invitation links are only valid for one day
-	t.tokens[string(token)] = &Token{string(token), time.Now().Add(1000000000 * 3600 * 24), account}
+	return string(token)
+}
+
+func (t *TokenManager) GenerateClanAdminInvitationToken(clan string) string {
+	account := &database.Account{Name: "tmp", Permission: database.ClanAdminInvitationLinkAccount, Clan: clan}
+
+	token := utility.RandBytes(92)
+	for {
+		// invitation links are only valid for one day
+		if _, exists := t.tokens.LoadOrStore(string(token), &Token{string(token), time.Now().Add(1000000000 * 3600 * 24), account}); exists {
+			token = utility.RandBytes(92)
+		} else {
+			break
+		}
+	}
+
 	return string(token)
 }
 
@@ -125,7 +149,7 @@ func ClanAdminAuthHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
 		account, err := GetAccountManager().GetAccountByToken(token)
-		if err == nil && account.Permission <= 1 {
+		if err == nil && account.Permission <= database.ClanAdminAccount {
 			c.Set("account", account)
 			c.Next()
 			return
@@ -204,12 +228,26 @@ func CreateUserFromInvitationLinkHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
 		account, err := GetAccountManager().GetAccountByToken(token)
-		if err == nil && account.Permission == database.InvitationLinkAccount {
-			database.GetInstance().AddAccount(json.Name, json.Password, account.Clan, 2)
+		if err == nil && account.Permission >= database.InvitationLinkAccount {
+			var permission int
+			switch account.Permission {
+			case database.ClanAdminInvitationLinkAccount:
+				permission = database.ClanAdminAccount
+			case database.InvitationLinkAccount:
+				permission = database.NormalAccount
+			}
+
+			err = database.GetInstance().AddAccount(json.Name, json.Password, account.Clan, permission)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
+				return
+			}
 			c.JSON(200, gin.H{
 				"message": "succeed",
 			})
-			delete(GetAccountManager().tokens, token)
+			GetAccountManager().tokens.Delete(token)
 			return
 		}
 	}
@@ -230,12 +268,17 @@ func GenerateInvitationLinkHandler(c *gin.Context) {
 		log.Panic("account is not a *Account")
 	}
 
-	if _account.Permission > database.ClanAdminAccount {
-		c.JSON(http.StatusUnauthorized, "not clan admin account")
-		c.Abort()
+	token := GetAccountManager().GenerateInvitationToken(_account.Clan)
+	c.JSON(http.StatusAccepted, gin.H{"token": token})
+}
+
+func GenerateClanAdminInvitationLinkHandler(c *gin.Context) {
+	var json ClanAdminInvitation
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	token := GetAccountManager().GenerateInvitationToken(_account.Clan)
+	token := GetAccountManager().GenerateClanAdminInvitationToken(json.Clan)
 	c.JSON(http.StatusAccepted, gin.H{"token": token})
 }

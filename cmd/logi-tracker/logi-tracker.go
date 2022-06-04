@@ -13,6 +13,8 @@ func main() {
 
 	r := gin.Default()
 	r.POST("/login", loginmiddleware.LoginHandler)
+	r.POST("/register", loginmiddleware.CreateUserFromInvitationLinkHandler)
+	r.POST("/admin/create_admin", loginmiddleware.CreateAdminOnFirstRequestHandler)
 
 	authorized := r.Group("/user", loginmiddleware.DefaultAuthHandler)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
@@ -21,7 +23,10 @@ func main() {
 	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)
 
 	clanAdmins := r.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
-	clanAdmins.POST("/register", loginmiddleware.CreateUserHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)
+
+	admins := r.Group("/admin", loginmiddleware.AdminAuthHandler)
+	admins.POST("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)
+
 	r.Run()
 }

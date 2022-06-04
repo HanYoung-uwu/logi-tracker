@@ -14,10 +14,13 @@ import (
 )
 
 type DataBaseManager struct {
-	db *sql.DB
+	db       *sql.DB
+	itemLock *sync.Map
 }
 
-// 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links
+// 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links,
+// 4 is clan admin invitation links
+
 type Account struct {
 	Name       string
 	Permission int
@@ -28,6 +31,7 @@ var NormalAccount = 2
 var AdminAccount = 0
 var ClanAdminAccount = 1
 var InvitationLinkAccount = 3
+var ClanAdminInvitationLinkAccount = 4
 
 type StockpileItem struct {
 	ItemType string `json:"item"`
@@ -62,23 +66,32 @@ func GetInstance() *DataBaseManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &DataBaseManager{initDatabase()}
+			singleton = &DataBaseManager{initDatabase(), &sync.Map{}}
 		}
 	}
 	return singleton
+}
+
+func (m *DataBaseManager) getItemLock(location string, item string, clan string) *sync.Mutex {
+	key := item + "###" + location + "###" + clan
+	val, _ := m.itemLock.LoadOrStore(key, &sync.Mutex{})
+	lock, ok := val.(*sync.Mutex)
+	if !ok {
+		log.Panic("val is not a lock")
+	}
+	return lock
 }
 
 var ErrorUnableToUpdateItem = errors.New("can't retrieve item, not enough in stockpile to retrieve")
 
 // a negative size means retrieval
 func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size int, clan string) error {
-	tx, err := m.db.Begin()
-	if err != nil {
-		log.Panic(err)
-	}
+	lock := m.getItemLock(location, item, clan)
+	lock.Lock()
+	defer lock.Unlock()
 
 	// check if we already have this item
-	stmt, err := tx.Prepare("select size from item where clan = ? and location = ? and type = ?")
+	stmt, err := m.db.Prepare("select size from item where clan = ? and location = ? and type = ?")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -89,6 +102,11 @@ func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size 
 		// new item
 		if size < 0 {
 			return ErrorUnableToUpdateItem
+		}
+
+		tx, err := m.db.Begin()
+		if err != nil {
+			log.Panic(err)
 		}
 		stmt, err := tx.Prepare("insert into item(location, type, size, clan) values(?, ?, ?, ?)")
 		if err != nil {
@@ -152,7 +170,7 @@ func (m *DataBaseManager) CreateStockpile(location string, code string, clan str
 	}
 }
 
-func (m *DataBaseManager) AddAccount(name string, password string, clan string, permission int) {
+func (m *DataBaseManager) AddAccount(name string, password string, clan string, permission int) error {
 	// 0 is super admin, 1 is clan admin, 2 is ordinary memenber
 	if permission < 0 || permission > 2 {
 		log.Panic("unexpected permission value: ", permission)
@@ -177,7 +195,9 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 	defer stmt.Close()
 	_, err = stmt.Exec(name, hashedPassword, permission, clan)
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
+		tx.Rollback()
+		return err
 	}
 
 	stmt, err = tx.Prepare("insert into salts(name, salt) values(?, ?)")
@@ -194,6 +214,7 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 	if err != nil {
 		log.Panic(err)
 	}
+	return nil
 }
 
 var ErrorNoAccount = errors.New("no account found")
