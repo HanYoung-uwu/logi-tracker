@@ -1,9 +1,9 @@
 import requests
 
-url = "http://127.0.0.1:8080"
+url = "http://127.0.0.1:6880/api"
 
 user = "admin"
-password = "admin admin admin admin admin"
+password = "12345678"
 
 # workaround cookie domain restrain when testing
 cookie = None
@@ -29,7 +29,7 @@ def get_all_items():
     print_res(res)
 
 def create_stockpile(location: str, code: str):
-    res = requests.post(url+ "/user/create_stockpile", cookies=cookie, json={"name": location})
+    res = requests.post(url+ "/user/create_stockpile", cookies=cookie, json={"code": code, "name": location})
     print_res(res)
 
 # negative size means retrieval

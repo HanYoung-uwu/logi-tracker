@@ -1,4 +1,6 @@
 import * as React from "react"
+import { BrowserRouter, Routes, Route, Link as RLink } from "react-router-dom";
+
 import {
   ChakraProvider,
   Box,
@@ -7,32 +9,27 @@ import {
   VStack,
   Code,
   Grid,
-  theme,
+  Flex
 } from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
 
+import Theme from "./theme"
+import LoginPage from "./login/loginpage"
+import { ItemsTable } from "./allitems.tsx/allitemstable";
 export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
-          </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn Chakra
-          </Link>
-        </VStack>
-      </Grid>
-    </Box>
-  </ChakraProvider>
+  <BrowserRouter>
+    <ChakraProvider theme={Theme}>
+      <nav>
+        <Link as={RLink} to="/login">login</Link>
+      </nav>
+      <Routes>
+        <Route path="/login" element={<LoginPage width={[
+          '100%', // 0-30em
+          '50%', // 30em-48em
+          '25%', // 48em-62em
+        ]} />} />
+        <Route path="/home" element={<ItemsTable />} />
+        <Route path="/" element={<Text>Root page</Text>} />
+      </Routes>
+    </ChakraProvider>
+  </BrowserRouter>
 )

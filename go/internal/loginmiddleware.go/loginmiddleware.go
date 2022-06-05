@@ -170,9 +170,8 @@ func CreateUserHandler(c *gin.Context) {
 		c.JSON(http.StatusNotAcceptable, gin.H{"reason": "password or name too short"})
 		return
 	}
-	if len(json.Password) < 100 {
-		padding := make([]byte, 100-len(json.Password))
-		json.Password = string(append(padding, json.Password...))
+	if len(json.Password) > 72 {
+		json.Password = json.Password[:71]
 	}
 	account, exists := c.Get("account")
 	if !exists {
@@ -204,8 +203,8 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"reason": "failed to validate"})
 		return
 	}
-
-	c.SetCookie("token", token, 3600*24*14, "/user", "", true, true)
+	c.SetSameSite(http.SameSiteStrictMode)
+	c.SetCookie("token", token, 3600*24*14, "/", "", !utility.DebugEnvironment, !utility.DebugEnvironment)
 	c.JSON(http.StatusAccepted, "success")
 }
 

@@ -33,9 +33,8 @@ func CreateAdminOnFirstRequestHandler(c *gin.Context) {
 				c.JSON(http.StatusNotAcceptable, gin.H{"reason": "password or name too short"})
 				return
 			}
-			if len(json.Password) < 100 {
-				padding := make([]byte, 100-len(json.Password))
-				json.Password = string(append(padding, json.Password...))
+			if len(json.Password) > 72 {
+				json.Password = json.Password[:71]
 			}
 
 			// if database file has already exist, is also not first time

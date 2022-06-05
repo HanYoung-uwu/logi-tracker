@@ -16,6 +16,7 @@ import (
 type DataBaseManager struct {
 	db       *sql.DB
 	itemLock *sync.Map
+	locationLock *sync.Map
 }
 
 // 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links,
@@ -54,7 +55,6 @@ func initDatabase() *sql.DB {
 	sqlStmt := `
 	CREATE TABLE IF NOT EXISTS location (location TEXT PRIMARY KEY, time DATETIME, clan TEXT, code TEXT);
 	CREATE TABLE IF NOT EXISTS account (name TEXT PRIMARY KEY, password TEXT, permission INTEGER, clan TEXT);
-	CREATE TABLE IF NOT EXISTS salts (name TEXT PRIMARY KEY, salt TEXT);
 	CREATE TABLE IF NOT EXISTS item (type TEXT, location TEXT, size INTEGER, clan TEXT);
 	`
 	m_db.Exec(sqlStmt)
@@ -66,7 +66,7 @@ func GetInstance() *DataBaseManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &DataBaseManager{initDatabase(), &sync.Map{}}
+			singleton = &DataBaseManager{initDatabase(), &sync.Map{}, &sync.Map{}}
 		}
 	}
 	return singleton
@@ -75,6 +75,16 @@ func GetInstance() *DataBaseManager {
 func (m *DataBaseManager) getItemLock(location string, item string, clan string) *sync.Mutex {
 	key := item + "###" + location + "###" + clan
 	val, _ := m.itemLock.LoadOrStore(key, &sync.Mutex{})
+	lock, ok := val.(*sync.Mutex)
+	if !ok {
+		log.Panic("val is not a lock")
+	}
+	return lock
+}
+
+func (m *DataBaseManager) getLocationLock(location string, clan string) *sync.Mutex {
+	key := location + "###" + clan
+	val, _ := m.locationLock.LoadOrStore(key, &sync.Mutex{})
 	lock, ok := val.(*sync.Mutex)
 	if !ok {
 		log.Panic("val is not a lock")
@@ -176,9 +186,7 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 		log.Panic("unexpected permission value: ", permission)
 	}
 
-	salt := utility.RandBytes(256)
-
-	hashedPassword, err := bcrypt.GenerateFromPassword(append(salt, password...), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -199,21 +207,11 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 		tx.Rollback()
 		return err
 	}
-
-	stmt, err = tx.Prepare("insert into salts(name, salt) values(?, ?)")
-	if err != nil {
-		log.Panic(err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(name, salt)
-	if err != nil {
-		log.Panic(err)
-	}
 	err = tx.Commit()
 	if err != nil {
 		log.Panic(err)
 	}
+
 	return nil
 }
 
@@ -237,17 +235,7 @@ func (m *DataBaseManager) GetAndValidateAccount(name string, password string) (*
 		return nil, ErrorNoAccount
 	}
 
-	stmt, err = m.db.Prepare("select salt from salts where name = ?")
-	if err != nil {
-		log.Panic(err)
-	}
-	defer stmt.Close()
-	var salt string
-	err = stmt.QueryRow(name).Scan(&salt)
-	if err != nil {
-		log.Panic(err)
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), append([]byte(salt), password...))
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		return nil, ErrorIncorrectPassword
 	}
@@ -306,4 +294,28 @@ func (m *DataBaseManager) GetAllLocations(clan string) []Location {
 		resultArray = append(resultArray, Location{location, time, code})
 	}
 	return resultArray
+}
+
+var ErrorLocationNotExists = errors.New("location doesn't exists")
+func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
+	lock := m.getLocationLock(location, clan)
+	lock.Lock()
+	defer lock.Unlock()
+	stmt, err := m.db.Prepare("delete from location where location.location = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	result, err := stmt.Exec(location)
+	if err != nil {
+		log.Panic(err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		log.Panic(err)
+	}
+	if affected == 0 {
+		return ErrorLocationNotExists
+	}
+	return nil
 }
