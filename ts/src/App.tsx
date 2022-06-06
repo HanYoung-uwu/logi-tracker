@@ -15,12 +15,11 @@ import {
 import Theme from "./theme"
 import LoginPage from "./login/loginpage"
 import { ItemsTable } from "./allitems.tsx/allitemstable";
+import HeaderPanel from "./navigationHeader/navigationHeader";
 export const App = () => (
   <BrowserRouter>
     <ChakraProvider theme={Theme}>
-      <nav>
-        <Link as={RLink} to="/login">login</Link>
-      </nav>
+      <HeaderPanel />
       <Routes>
         <Route path="/login" element={<LoginPage width={[
           '100%', // 0-30em

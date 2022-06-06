@@ -23,6 +23,7 @@ func main() {
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)
 	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)
 	authorized.GET("/delete_stockpile", handlers.DeleteStockpileHandler)
+	authorized.GET("/info", handlers.GetBasicAccountInfo)
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)

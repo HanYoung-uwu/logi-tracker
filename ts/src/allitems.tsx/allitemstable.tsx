@@ -1,12 +1,12 @@
 import {
     Input, Flex, Text, Table,
+    Center,
     Thead,
     Tbody,
     Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
@@ -34,20 +34,27 @@ const ItemsTable = (props: any) => {
         fetchAndConstructTable();
     }, []);
 
-    return (<TableContainer>
-        <Table variant='simple'>
-            <Thead>
-                <Tr>
-                    <Th>Item</Th>
-                    <Th isNumeric>Size</Th>
-                    <Th>Location</Th>
-                </Tr>
-            </Thead>
-            <Tbody>
-                {rows}
-            </Tbody>
-        </Table>
-    </TableContainer>)
+    return (
+        <Center>
+            <TableContainer width={[
+                '100%', // 0-30em
+                '70%', // 30em-48em
+                '60%', // 48em-62em
+            ]}>
+                <Table variant='simple'>
+                    <Thead>
+                        <Tr>
+                            <Th>Item</Th>
+                            <Th isNumeric>Size</Th>
+                            <Th>Location</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {rows}
+                    </Tbody>
+                </Table>
+            </TableContainer>
+        </Center>);
 }
 
 export { ItemsTable }
