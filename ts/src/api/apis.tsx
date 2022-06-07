@@ -33,4 +33,13 @@ const fetchAccountInfo: () => Promise<AccountInfo | null> = async () => {
     }
 }
 
-export {fetchAllItems, fetchAccountInfo}
+const fetchClanInviteLink: () => Promise<string | null> = async () => {
+    let url = API_URL_ROOT + "/clan/invitation";
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) != 2) {
+        return null;
+    } else {
+        return (await res.json())["token"];
+    }
+};
+export {fetchAllItems, fetchAccountInfo, fetchClanInviteLink}
