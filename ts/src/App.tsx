@@ -16,6 +16,8 @@ import Theme from "./theme"
 import LoginPage from "./login/loginpage"
 import { ItemsTable } from "./allitems.tsx/allitemstable";
 import HeaderPanel from "./navigationHeader/navigationHeader";
+import RegisterPage from "./registerPage/registerPage";
+
 export const App = () => (
   <BrowserRouter>
     <ChakraProvider theme={Theme}>
@@ -28,6 +30,7 @@ export const App = () => (
         ]} />} />
         <Route path="/home" element={<ItemsTable />} />
         <Route path="/" element={<Text>Root page</Text>} />
+        <Route path="/invite" element={<RegisterPage />} />
       </Routes>
     </ChakraProvider>
   </BrowserRouter>
