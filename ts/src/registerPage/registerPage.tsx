@@ -10,15 +10,21 @@ const RegisterPage = (props: any) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [clan, setClan] = useState('');
     const [show, setShow] = useState(false);
     const [params, setParams] = useSearchParams();
+    
+
+    useEffect(() => {
+        let token = params.get("link");
+        document.cookie = `token=${token}`;
+        fetchAccountInfo().then(info => {if (info) setClan(info.Clan);});
+    }, [params]);
 
     const handleClick = () => {
         setShow(!show);
     };
     const handleCreate = () => {
-        let token = params.get("link");
-        document.cookie = `token=${token}`;
         let url = API_URL_ROOT + "/register"
         let headers = {
             'Accept': 'application/json',
@@ -47,6 +53,7 @@ const RegisterPage = (props: any) => {
             '50%', // 30em-48em
             '25%', // 48em-62em
         ]} alignItems="flex-start">
+            <Text>{`You've been invited to ${clan}`}</Text>
             <Text fontSize='24px'>Account</Text>
             <Input onChange={(event) => setUsername(event.target.value)} />
             <Text fontSize='24px'>Password</Text>
