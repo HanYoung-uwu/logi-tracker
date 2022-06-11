@@ -72,7 +72,7 @@ func InsertOrUpdateItemHandler(c *gin.Context) {
 		return
 	}
 
-	err := database.GetInstance().InsertOrUpdateItem(json.Location, json.ItemType, json.Size, _account.Clan)
+	err := database.GetInstance().InsertOrUpdateItem(json.Location, json.ItemType, json.Size, _account.Clan, _account.Name)
 	if err != nil {
 		c.JSON(http.StatusNotModified, "unable to update item")
 		return

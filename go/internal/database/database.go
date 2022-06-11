@@ -14,8 +14,8 @@ import (
 )
 
 type DataBaseManager struct {
-	db       *sql.DB
-	itemLock *sync.Map
+	db           *sql.DB
+	itemLock     *sync.Map
 	locationLock *sync.Map
 }
 
@@ -46,6 +46,16 @@ type Location struct {
 	Code     string
 }
 
+type HistoryRecord struct {
+	Action   int
+	Time     time.Time
+	ItemType string
+	Location string
+	Size     int
+	Clan     string
+	User     string
+}
+
 var lock = &sync.Mutex{}
 var singleton *DataBaseManager
 
@@ -56,6 +66,8 @@ func initDatabase() *sql.DB {
 	CREATE TABLE IF NOT EXISTS location (location TEXT PRIMARY KEY, time DATETIME, clan TEXT, code TEXT);
 	CREATE TABLE IF NOT EXISTS account (name TEXT PRIMARY KEY, password TEXT, permission INTEGER, clan TEXT);
 	CREATE TABLE IF NOT EXISTS item (type TEXT, location TEXT, size INTEGER, clan TEXT);
+	CREATE TABLE IF NOT EXISTS history (action INTEGER, user TEXT, clan TEXT, type TEXT, size INTEGER, location TEXT, time DATETIME);
+	CREATE INDEX IF NOT EXISTS idx_item_history on history (clan, location);
 	`
 	m_db.Exec(sqlStmt)
 	return m_db
@@ -95,7 +107,41 @@ func (m *DataBaseManager) getLocationLock(location string, clan string) *sync.Mu
 var ErrorUnableToUpdateItem = errors.New("can't retrieve item, not enough in stockpile to retrieve")
 
 // a negative size means retrieval
-func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size int, clan string) error {
+func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size int, clan string, user string) error {
+	err := m._InsertOrUpdateItem(location, item, size, clan)
+	if err != nil {
+		return err
+	} else {
+		defer func(location string, item string, size int, clan string) {
+			// update the stockpile's time
+			stmt, err := m.db.Prepare("update location set time=? where location=? and clan=?")
+			if err != nil {
+				log.Panic(err)
+			}
+			defer stmt.Close()
+			stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
+
+			// log to history
+			stmt, err = m.db.Prepare("insert into history(action, user, clan, type, size, location, time) values(?, ?, ?, ?, ?, ?, ?")
+			if err != nil {
+				log.Panic(err)
+			}
+			defer stmt.Close()
+			var action int
+			if size > 0 {
+				action = 0
+			} else {
+				action = 1
+			}
+			_, err = stmt.Exec(action, user, clan, item, size, location, time.Now().Format(time.RFC3339))
+			if err != nil {
+				log.Panic(err)
+			}
+		}(location, item, size, clan)
+	}
+	return nil
+}
+func (m *DataBaseManager) _InsertOrUpdateItem(location string, item string, size int, clan string) error {
 	lock := m.getItemLock(location, item, clan)
 	lock.Lock()
 	defer lock.Unlock()
@@ -114,26 +160,13 @@ func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size 
 			return ErrorUnableToUpdateItem
 		}
 
-		tx, err := m.db.Begin()
-		if err != nil {
-			log.Panic(err)
-		}
-		stmt, err := tx.Prepare("insert into item(location, type, size, clan) values(?, ?, ?, ?)")
+		stmt, err := m.db.Prepare("insert into item(location, type, size, clan) values(?, ?, ?, ?)")
 		if err != nil {
 			log.Panic(err)
 		}
 		defer stmt.Close()
 		stmt.Exec(location, item, size, clan)
 
-		// update the stockpile's time as well
-		stmt, err = tx.Prepare("update location set time=? where location=? and clan=?")
-		if err != nil {
-			log.Panic(err)
-		}
-		defer stmt.Close()
-		stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
-
-		err = tx.Commit()
 		if err != nil {
 			log.Panic(err)
 		}
@@ -297,6 +330,7 @@ func (m *DataBaseManager) GetAllLocations(clan string) []Location {
 }
 
 var ErrorLocationNotExists = errors.New("location doesn't exists")
+
 func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
 	lock := m.getLocationLock(location, clan)
 	lock.Lock()
@@ -318,4 +352,46 @@ func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
 		return ErrorLocationNotExists
 	}
 	return nil
+}
+
+func (m *DataBaseManager) GetClanHistory(clan string, limit ...int) []HistoryRecord {
+	var queryLimit int
+	if len(limit) == 0 {
+		queryLimit = 30
+	} else {
+		queryLimit = limit[0]
+	}
+
+	stmt, err := m.db.Prepare("select action, user, type, size, location, time from history where clan = ? limit ?")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(clan, queryLimit)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	resultArray := make([]HistoryRecord, 0, queryLimit)
+
+	for rows.Next() {
+		var action int
+		var user string
+		var item string
+		var size int
+		var time time.Time
+		var location string
+		rows.Scan(&action, &user, &item, &size, &location, &time)
+		resultArray = append(resultArray, HistoryRecord{
+			Action:   action,
+			User:     user,
+			ItemType: item,
+			Size:     size,
+			Location: location,
+			Time:     time,
+		})
+	}
+	return resultArray
 }
