@@ -122,7 +122,7 @@ func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size 
 			stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
 
 			// log to history
-			stmt, err = m.db.Prepare("insert into history(action, user, clan, type, size, location, time) values(?, ?, ?, ?, ?, ?, ?")
+			stmt, err = m.db.Prepare("insert into history(action, user, clan, type, size, location, time) values(?, ?, ?, ?, ?, ?, ?)")
 			if err != nil {
 				log.Panic(err)
 			}

@@ -19,14 +19,15 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure,
+    HStack,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { fetchAllItems, fetchLocations, Location } from '../api/apis'
+import { addItem, fetchAllItems, fetchLocations, Location } from '../api/apis'
 import ItemSelectPage from '../itemTable/itemTable';
 
 
-const ItemsTable = (props: any) => {
+const ItemsTable = (props: {fetchRef: ((arg0: Function) => any)} | null) => {
     const [rows, setRows] = useState(Array<JSX.Element>());
     let navigate = useNavigate();
     const fetchAndConstructTable = async () => {
@@ -41,6 +42,8 @@ const ItemsTable = (props: any) => {
             }));
         }
     }
+
+    props?.fetchRef(fetchAndConstructTable);
 
     useEffect(() => {
         fetchAndConstructTable();
@@ -66,7 +69,20 @@ const ItemsTable = (props: any) => {
 const HomePage = (props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [locations, setLocations] = useState<Array<Location>>();
+    const [selectedLocation, setSelectedLocation] = useState<string>('');
+    const [quantity, setQuantity] = useState<number>(0);
+    
+    let refreshTable: any;
 
+    const handleAddItem = (name: string) => {
+        let location = selectedLocation;
+        if (location == '' && locations) {
+            location = locations[0].location;
+        }
+        addItem(name, quantity, location);
+        onClose();
+        refreshTable();
+    };
     useEffect(() => {
         const initLocation = async () => {
             let res = await fetchLocations();
@@ -85,7 +101,7 @@ const HomePage = (props: any) => {
                 '60%', // 48em-62em
             ]}>
                 <Button alignSelf="flex-end" onClick={() => onOpen()}>Add Item</Button>
-                <ItemsTable />
+                <ItemsTable fetchRef={refresh => refreshTable = refresh}/>
             </VStack>
             <Modal isOpen={isOpen} onClose={onClose} size='full'>
                 <ModalOverlay />
@@ -94,14 +110,15 @@ const HomePage = (props: any) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <VStack>
-                            <Select width={[
-                                '100%', // 0-30em
-                                '50%', // 30em-48em
-                                '40%', // 48em-62em
-                            ]} placeholder='Choose Stockpile'>
-                                {locations?.map(({ location }) => <option value={location}>{location}</option>)}
-                            </Select>
-                            <ItemSelectPage />
+                                <HStack>
+                                    <Text>Stockpile</Text>
+                                    <Select onChange={event => setSelectedLocation(event.target.value)}>
+                                        {locations?.map(({ location }) => <option value={location}>{location}</option>)}
+                                    </Select>
+                                    <Input onChange={event => setQuantity(Number.parseInt(event.target.value))} type="number" placeholder='quantity'></Input>
+                                </HStack>
+                                <Text>Click on item to add</Text>
+                            <ItemSelectPage onClick={handleAddItem}/>
                         </VStack>
                     </ModalBody>
                     <ModalFooter>

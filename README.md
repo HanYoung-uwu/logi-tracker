@@ -10,10 +10,10 @@ This is a work in progress.
 I aim to support:
 - [x] Invitation link to invite clans for admin
 - [x] Invitation link to invite members for clan leader
-- [] Create, read, update, delete of stockpiles as well as its contents
-- [] Reminder of soon-to-be expired stockpiles
-- [] Stockpile sharing between friendly clans
-- [] Stockpile history inside clan
+- [ ] Create, read, update, delete of stockpiles as well as its contents
+- [ ] Reminder of soon-to-be expired stockpiles
+- [ ] Stockpile sharing between friendly clans
+- [ ] Stockpile history inside clan
 
 ## How to run it locally
 ### Backend
