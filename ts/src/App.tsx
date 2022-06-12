@@ -14,9 +14,10 @@ import {
 
 import Theme from "./theme"
 import LoginPage from "./login/loginpage"
-import { ItemsTable } from "./allitems.tsx/allitemstable";
+import { HomePage } from "./homepage/homepage"
 import HeaderPanel from "./navigationHeader/navigationHeader";
 import RegisterPage from "./registerPage/registerPage";
+import ItemsPage from "./itemTable/itemTable";
 
 export const App = () => (
   <BrowserRouter>
@@ -28,9 +29,10 @@ export const App = () => (
           '50%', // 30em-48em
           '25%', // 48em-62em
         ]} />} />
-        <Route path="/home" element={<ItemsTable />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/" element={<Text>Root page</Text>} />
         <Route path="/invite" element={<RegisterPage />} />
+        <Route path="/items" element={<ItemsPage />} />
       </Routes>
     </ChakraProvider>
   </BrowserRouter>
