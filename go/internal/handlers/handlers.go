@@ -120,3 +120,47 @@ func DeleteStockpileHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "success")
 }
+
+func DeleteItemHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+
+	var json database.StockpileItem
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	database.GetInstance().DeleteItem(json.Location, json.ItemType, _account.Clan, _account.Name)
+	c.JSON(http.StatusOK, "success")
+}
+
+func SetItemHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+
+	var json database.StockpileItem
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	database.GetInstance().SetItem(json.Location, json.ItemType, json.Size, _account.Clan, _account.Name)
+	c.JSON(http.StatusOK, "success")
+}

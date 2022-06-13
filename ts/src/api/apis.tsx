@@ -67,7 +67,7 @@ const fetchLocations: () => Promise<Array<Location> | null> = async () => {
     }
 }
 
-const addItem: (item: string, size: number, location: string) => void = async (item, size, location) => {
+const addItem: (item: string, size: number, location: string) => Promise<boolean> = async (item, size, location) => {
     let url = API_URL_ROOT + "/user/update_item";
     let headers = {
         'Accept': 'application/json',
@@ -83,9 +83,50 @@ const addItem: (item: string, size: number, location: string) => void = async (i
         })
     });
     if (Math.floor(res.status / 100) != 2) {
+        return false;
+    };
+    return true;
+};
+
+const deleteItem: (item: string, location: string) => void = async (item, location) => {
+    let url = API_URL_ROOT + "/user/delete_item";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            item: item,
+            location: location
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
         return null;
     };
 };
 
-export { fetchAllItems, fetchAccountInfo, fetchClanInviteLink, addItem, fetchLocations };
+const setItem: (item: string, size: number, location: string) => Promise<boolean> = async (item, size, location) => {
+    let url = API_URL_ROOT + "/user/set_item";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            item: item,
+            location: location,
+            size: size
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        return false;
+    };
+    return true;
+};
+
+export { fetchAllItems, fetchAccountInfo, fetchClanInviteLink, addItem, fetchLocations, deleteItem, setItem };
 export type { Location };

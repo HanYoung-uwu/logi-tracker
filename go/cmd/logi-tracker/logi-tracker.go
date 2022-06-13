@@ -22,7 +22,9 @@ func main() {
 	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)
 	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)
-	authorized.GET("/delete_stockpile", handlers.DeleteStockpileHandler)
+	authorized.POST("/delete_stockpile", handlers.DeleteStockpileHandler)
+	authorized.POST("/delete_item", handlers.DeleteItemHandler)
+	authorized.POST("/set_item", handlers.SetItemHandler)
 	authorized.GET("/info", handlers.GetBasicAccountInfo)
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)

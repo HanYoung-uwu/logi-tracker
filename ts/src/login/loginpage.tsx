@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Input, Flex, Text, HStack, VStack, InputRightElement, Button, InputGroup } from '@chakra-ui/react'
 import { API_URL_ROOT } from '../config/config';
 import { useNavigate } from "react-router-dom";
+import { AccountInfoContext } from './accountInfoStore';
 
 const LoginPage = (prop: any) => {
     const [account, setAccount] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [show, setShow] = React.useState(false);
+    const accountInfo = useContext(AccountInfoContext);
+
     let navigate = useNavigate();
     const handleClick = () => setShow(!show);
     const handleLogin = () => {
@@ -26,6 +29,7 @@ const LoginPage = (prop: any) => {
                 })
             });
             if (Math.floor(res.status / 100) == 2) {
+                accountInfo.setAccountName(account);
                 navigate("/home", { replace: true });
             }
         };

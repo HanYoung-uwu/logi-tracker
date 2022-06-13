@@ -1,23 +1,24 @@
 import { Stack, HStack, VStack, Button, Spacer, Center, Icon, Text } from '@chakra-ui/react'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom'
 import { MdAccountCircle } from 'react-icons/md';
 import { fetchAccountInfo } from '../api/apis';
+import { AccountInfoContext } from '../login/accountInfoStore';
 
-const NameBadge = (props: any) => {
+const NameBadge = observer((props: any) => {
     let navigate = useNavigate();
     const [handleClick, setHandleClick] = useState<any>();
-    const [display, setDisplay] = useState("SIGN IN");
+    const accountInfo = useContext(AccountInfoContext);
 
     useEffect(() => {
         const init = async () => {
             let info = await fetchAccountInfo();
             if (info) {
                 setHandleClick(() => { console.log("TODO: ACCOUNT SETTING PAGE") });
-                setDisplay(info.Name);
+                accountInfo.name = info.Name;
             } else {
                 setHandleClick(() => navigate("/login", { replace: true }));
-                setDisplay("SIGN IN");
             }
         };
         init();
@@ -26,10 +27,10 @@ const NameBadge = (props: any) => {
         <Button onClick={handleClick}>
             <HStack>
                 <Icon as={MdAccountCircle} boxSize={6} />
-                <Text>{display}</Text>
+                <Text>{accountInfo.name == '' ? "SIGN IN" : accountInfo.name}</Text>
             </HStack>
         </Button>
     )
-}
+});
 
 export { NameBadge }

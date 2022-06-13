@@ -47,6 +47,7 @@ type Location struct {
 }
 
 type HistoryRecord struct {
+	// 0 add, 1 retrieve, 2 delete, 3 set
 	Action   int
 	Time     time.Time
 	ItemType string
@@ -112,7 +113,7 @@ func (m *DataBaseManager) InsertOrUpdateItem(location string, item string, size 
 	if err != nil {
 		return err
 	} else {
-		defer func(location string, item string, size int, clan string) {
+		go func(location string, item string, size int, clan string) {
 			// update the stockpile's time
 			stmt, err := m.db.Prepare("update location set time=? where location=? and clan=?")
 			if err != nil {
@@ -193,6 +194,76 @@ func (m *DataBaseManager) _InsertOrUpdateItem(location string, item string, size
 			return ErrorUnableToUpdateItem
 		}
 	}
+}
+
+func (m *DataBaseManager) DeleteItem(location string, item string, clan string, user string) {
+	lock := m.getItemLock(location, item, clan)
+	lock.Lock()
+	defer lock.Unlock()
+	stmt, err := m.db.Prepare("delete from item where clan = ? and location = ? and type = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+	stmt.Exec(clan, location, item)
+
+	if err != nil {
+		log.Panic(err)
+	}
+	go func(location string, item string, clan string) {
+		// update the stockpile's time
+		stmt, err := m.db.Prepare("update location set time=? where location=? and clan=?")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
+
+		// log to history
+		stmt, err = m.db.Prepare("insert into history(action, user, clan, type, location, time) values(?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		action := 2
+		_, err = stmt.Exec(action, user, clan, item, location, time.Now().Format(time.RFC3339))
+		if err != nil {
+			log.Panic(err)
+		}
+	}(location, item, clan)
+}
+
+func (m *DataBaseManager) SetItem(location string, item string, size int, clan string, user string) {
+	lock := m.getItemLock(location, item, clan)
+	lock.Lock()
+	defer lock.Unlock()
+	stmt, err := m.db.Prepare("update item set size = ? where clan = ? and location = ? and type = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+	stmt.Exec(size, clan, location, item)
+	go func(location string, item string, clan string) {
+		// update the stockpile's time
+		stmt, err := m.db.Prepare("update location set time=? where location=? and clan=?")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
+
+		// log to history
+		stmt, err = m.db.Prepare("insert into history(action, user, clan, type, size, location, time) values(?, ?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		action := 3
+		_, err = stmt.Exec(action, user, clan, item, size, location, time.Now().Format(time.RFC3339))
+		if err != nil {
+			log.Panic(err)
+		}
+	}(location, item, clan)
 }
 
 func (m *DataBaseManager) CreateStockpile(location string, code string, clan string) {
