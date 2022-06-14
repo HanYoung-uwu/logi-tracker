@@ -16,8 +16,17 @@ interface AccountInfo {
 
 interface Location {
     location: string
-	time:     Date
-	code:     string
+    time: Date
+    code: string
+}
+
+interface HistoryRecord {
+    Location: string
+    User: string
+    Time: Date
+    Action: string
+    ItemType: string
+    Size: number
 }
 
 const fetchAllItems: (navigate: NavigateFunction) => Promise<Array<ItemRecord> | void> = async (navigate: NavigateFunction) => {
@@ -128,5 +137,32 @@ const setItem: (item: string, size: number, location: string) => Promise<boolean
     return true;
 };
 
-export { fetchAllItems, fetchAccountInfo, fetchClanInviteLink, addItem, fetchLocations, deleteItem, setItem };
-export type { Location };
+const fetchHistory: (navigate: NavigateFunction) => Promise<Array<HistoryRecord>> = async (navigate) => {
+    let url = API_URL_ROOT + "/user/history";
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) != 2) {
+        navigate("/login", { replace: true });
+        return [];
+    };
+    let result = await res.json();
+    let returnValue = [];
+    for (let i = 0; i < result.length; i++) {
+        let action = '';
+        switch (result[i].Action) {
+            case 0:
+                action = "add"; break;
+            case 1:
+                action = "retrieve"; break;
+            case 2:
+                action = "delete"; break;
+            case 3:
+                action = "set"; break;
+        }
+        result[i].Action = action;
+        result[i].Time = new Date(result[i].Time);
+    }
+    return result;
+}
+
+export { fetchAllItems, fetchAccountInfo, fetchClanInviteLink, addItem, fetchLocations, deleteItem, setItem, fetchHistory };
+export type { Location, HistoryRecord };

@@ -433,7 +433,7 @@ func (m *DataBaseManager) GetClanHistory(clan string, limit ...int) []HistoryRec
 		queryLimit = limit[0]
 	}
 
-	stmt, err := m.db.Prepare("select action, user, type, size, location, time from history where clan = ? limit ?")
+	stmt, err := m.db.Prepare("select action, user, type, size, location, time from history where clan = ? order by time desc limit ?")
 	if err != nil {
 		log.Panic(err)
 	}

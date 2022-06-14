@@ -26,6 +26,7 @@ func main() {
 	authorized.POST("/delete_item", handlers.DeleteItemHandler)
 	authorized.POST("/set_item", handlers.SetItemHandler)
 	authorized.GET("/info", handlers.GetBasicAccountInfo)
+	authorized.GET("/history", handlers.GetClanHistoryHandler)
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)
