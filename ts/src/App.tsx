@@ -14,7 +14,7 @@ import {
 
 import Theme from "./theme"
 import LoginPage from "./login/loginpage"
-import { HomePage } from "./homepage/homepage"
+import { HomePage } from "./homepage/homepage";
 import HeaderPanel from "./navigationHeader/navigationHeader";
 import RegisterPage from "./registerPage/registerPage";
 import ItemsPage from "./itemTable/itemTable";

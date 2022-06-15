@@ -1,7 +1,7 @@
 import { HStack, VStack, Image, Text, Input, Button } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-
 import { IconList } from "../icons/icons";
+import { MAX_ITEM_TABLE_DISPLAY_SIZE } from "../config/config";
 
 const ItemSelectPage = (props: any) => {
     const [filter, setFilter] = useState('');
@@ -25,19 +25,37 @@ const ItemSelectPage = (props: any) => {
     return (
         <VStack>
             <Input onChange={event => setFilter(event.target.value)}
-                placeholder="Search..." 
+                placeholder="Search..."
                 width={[
                     '100%', // 0-30em
                     '80%', // 30em-48em
                     '50%', // 48em-62em
-                  ]} />
+                ]} />
             <ItemsTable filter={filter} onClick={props.onClick} rowNum={rowNumber} />
         </VStack>)
-}
+};
+
+const PoorMansPagination = (props: { size: number, onClick: (page: number) => void, currentPage: number }) => {
+    let buttonSize = props.size;
+    let buttons = [];
+    for (let i = 0; i < buttonSize; i++) {
+        buttons.push(<Button onClick={() => props.onClick(i)}
+            disabled={i == props.currentPage ? true : false}>
+            {(i + 1).toString()}
+        </Button>);
+    };
+    return (
+        <HStack>
+            {buttons}
+        </HStack>
+    )
+};
 
 const ItemsTable = (props: { filter?: string, rowNum?: number, onClick?: (name: string) => any }) => {
+    const [currentPage, setCurrentPage] = useState(0);
+
     let sources = IconList;
-    
+
     if (props.filter && props.filter != "") {
         let filter: string = props.filter.toLowerCase();
         sources = sources.filter(({ name }) => name.toLowerCase().includes(filter));
@@ -49,7 +67,11 @@ const ItemsTable = (props: { filter?: string, rowNum?: number, onClick?: (name: 
 
     let imgs = [];
     let row: JSX.Element[] = [];
-    for (let i = 0; i < sources.length; i++) {
+    for (let i = MAX_ITEM_TABLE_DISPLAY_SIZE * currentPage; i < sources.length; i++) {
+        if (i >= MAX_ITEM_TABLE_DISPLAY_SIZE * (currentPage + 1)) {
+            break;
+        };
+
         if (row.length == rowNum) {
             imgs.push(<HStack>{row}</HStack>);
             row = [];
@@ -69,6 +91,11 @@ const ItemsTable = (props: { filter?: string, rowNum?: number, onClick?: (name: 
     if (row.length != 0) {
         imgs.push(<HStack>{row}</HStack>);
     }
+    
+    let buttonSize = Math.ceil(sources.length / MAX_ITEM_TABLE_DISPLAY_SIZE);
+    imgs.push(<PoorMansPagination onClick={(page: number) => setCurrentPage(page)}
+        size={buttonSize}
+        currentPage={currentPage} />);
 
     return (<VStack>
         {imgs}

@@ -45,7 +45,7 @@ func CreateStockpileHandler(c *gin.Context) {
 
 	var json Stockpile
 	if err := c.ShouldBindJSON(&json); err != nil || len(json.Code) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
 

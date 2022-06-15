@@ -145,7 +145,6 @@ const fetchHistory: (navigate: NavigateFunction) => Promise<Array<HistoryRecord>
         return [];
     };
     let result = await res.json();
-    let returnValue = [];
     for (let i = 0; i < result.length; i++) {
         let action = '';
         switch (result[i].Action) {
@@ -162,7 +161,40 @@ const fetchHistory: (navigate: NavigateFunction) => Promise<Array<HistoryRecord>
         result[i].Time = new Date(result[i].Time);
     }
     return result;
-}
+};
 
-export { fetchAllItems, fetchAccountInfo, fetchClanInviteLink, addItem, fetchLocations, deleteItem, setItem, fetchHistory };
+const addStockpile = async (name: string, code: string, navigate: NavigateFunction) => {
+    let url = API_URL_ROOT + "/user/create_stockpile";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name,
+            code: code
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        if (res.status == 401) {
+            navigate("/login", { replace: true });
+        } else if (res.status == 406) {
+            return false;
+        }
+    };
+    return true;
+};
+
+export {
+    fetchAllItems,
+    fetchAccountInfo,
+    fetchClanInviteLink,
+    addItem, fetchLocations,
+    deleteItem,
+    setItem,
+    fetchHistory,
+    addStockpile
+};
 export type { Location, HistoryRecord };

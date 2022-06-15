@@ -1,3 +1,4 @@
-const API_URL_ROOT = "http://127.0.0.1:6880/api"
-const WEBSITE_ROOT = "http://127.0.0.1:6880"
-export {API_URL_ROOT, WEBSITE_ROOT}
+const API_URL_ROOT = "http://127.0.0.1:6880/api";
+const WEBSITE_ROOT = "http://127.0.0.1:6880";
+const MAX_ITEM_TABLE_DISPLAY_SIZE = 30;
+export {API_URL_ROOT, WEBSITE_ROOT, MAX_ITEM_TABLE_DISPLAY_SIZE}

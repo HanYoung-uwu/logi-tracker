@@ -1,8 +1,6 @@
 import {
-    List,
     ListItem,
-    ListIcon,
-    OrderedList,
+    Center,
     UnorderedList,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
@@ -40,9 +38,15 @@ const HistoryList = (props: any) => {
     }, []);
 
     return (
-        <UnorderedList>
-            {listSource}
-        </UnorderedList>);
+        <Center>
+            <UnorderedList width={[
+                '100%', // 0-30em
+                '70%', // 30em-48em
+                '60%', // 48em-62em
+            ]}>
+                {listSource}
+            </UnorderedList>
+        </Center>);
 }
 
 export { HistoryList };
