@@ -25,6 +25,7 @@ func main() {
 	authorized.POST("/delete_stockpile", handlers.DeleteStockpileHandler)
 	authorized.POST("/delete_item", handlers.DeleteItemHandler)
 	authorized.POST("/set_item", handlers.SetItemHandler)
+	authorized.POST("/refresh_stockpile", handlers.RefreshStockpileHandler)
 	authorized.GET("/info", handlers.GetBasicAccountInfo)
 	authorized.GET("/history", handlers.GetClanHistoryHandler)
 

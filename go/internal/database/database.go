@@ -422,6 +422,15 @@ func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
 	if affected == 0 {
 		return ErrorLocationNotExists
 	}
+	stmt, err = m.db.Prepare("delete from item where location = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	_, err = stmt.Exec(location)
+	if err != nil {
+		log.Panic(err)
+	}
 	return nil
 }
 
@@ -465,4 +474,16 @@ func (m *DataBaseManager) GetClanHistory(clan string, limit ...int) []HistoryRec
 		})
 	}
 	return resultArray
+}
+
+func (m *DataBaseManager) RefreshStockpile(location string, clan string) {
+	stmt, err := m.db.Prepare("update location set time=? where location=? and clan=?")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(time.Now().Format(time.RFC3339), location, clan)
+	if err != nil {
+		log.Panic(err)
+	}
 }

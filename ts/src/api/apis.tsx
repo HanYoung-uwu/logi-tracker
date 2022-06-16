@@ -187,6 +187,48 @@ const addStockpile = async (name: string, code: string, navigate: NavigateFuncti
     return true;
 };
 
+const deleteStockpile = async (name: string, navigate: NavigateFunction) => {
+    let url = API_URL_ROOT + "/user/delete_stockpile";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        if (res.status == 401) {
+            navigate("/login", { replace: true });
+        }
+    };
+    return true;
+};
+
+const refreshStockpile = async (name: string, navigate: NavigateFunction) => {
+    let url = API_URL_ROOT + "/user/refresh_stockpile";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        if (res.status == 401) {
+            navigate("/login", { replace: true });
+        }
+    };
+    return true;
+};
+
 export {
     fetchAllItems,
     fetchAccountInfo,
@@ -195,6 +237,8 @@ export {
     deleteItem,
     setItem,
     fetchHistory,
-    addStockpile
+    addStockpile,
+    deleteStockpile,
+    refreshStockpile
 };
 export type { Location, HistoryRecord };

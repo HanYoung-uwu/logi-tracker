@@ -21,21 +21,35 @@ import {
     ButtonGroup,
     useDisclosure,
     Input,
-    useToast
+    useToast,
+    HStack
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchLocations, addStockpile } from '../api/apis';
+import { fetchLocations, addStockpile, deleteStockpile, refreshStockpile } from '../api/apis';
 
-const LocationRow = ({ location, time, code }: { location: string, time: Date, code: string }) => {
+const LocationRow = ({ location, time, code, refreshFunc }: { location: string, time: Date, code: string, refreshFunc: () => void }) => {
     let expireTime = time.getTime() + 1000 * 3600 * 48;
     let hours = (expireTime - Date.now()) / (1000 * 3600);
+    const navigate = useNavigate();
 
     return (
         <Tr key={location}>
             <Td>{location}</Td>
             <Td><Tooltip label={(new Date(expireTime)).toLocaleString()}>{Math.floor(hours).toString() + " hours"}</Tooltip></Td>
             <Td isNumeric>{code}</Td>
+            <Td>
+                <HStack>
+                    <Button backgroundColor="green.500" size='sm'
+                        onClick={() => { refreshStockpile(location, navigate); refreshFunc() }}>
+                        Refresh
+                    </Button>
+                    <Button backgroundColor="red.500" size='sm'
+                        onClick={() => { deleteStockpile(location, navigate); refreshFunc() }}>
+                        Delete
+                    </Button>
+                </HStack>
+            </Td>
         </Tr>
     );
 };
@@ -51,7 +65,7 @@ const LocationsList = (props: any) => {
     const refreshRows = async () => {
         let locations = await fetchLocations();
         if (locations) {
-            setRows(locations.map(location => <LocationRow {...location} />));
+            setRows(locations.map(location => <LocationRow {...location} refreshFunc={refreshRows} />));
         }
     };
 
@@ -118,7 +132,7 @@ const LocationsList = (props: any) => {
                             Add a new stockpile
                         </PopoverHeader>
                         <PopoverArrow />
-                        <PopoverCloseButton />
+                        <PopoverCloseButton onClick={() => onClose()}/>
                         <PopoverBody>
                             <VStack>
                                 <Input placeholder='Stockpile name' onChange={event => setStockpileName(event.target.value)} />
@@ -148,6 +162,7 @@ const LocationsList = (props: any) => {
                                 <Th>Stockpile Name</Th>
                                 <Th>Expire In</Th>
                                 <Th isNumeric>Code</Th>
+                                <Th></Th>
                             </Tr>
                         </Thead>
                         <Tbody>

@@ -164,3 +164,25 @@ func SetItemHandler(c *gin.Context) {
 	database.GetInstance().SetItem(json.Location, json.ItemType, json.Size, _account.Clan, _account.Name)
 	c.JSON(http.StatusOK, "success")
 }
+
+func RefreshStockpileHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+
+	var json Stockpile
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	database.GetInstance().RefreshStockpile(json.Location, _account.Clan)
+	c.JSON(http.StatusOK, "success")
+}
