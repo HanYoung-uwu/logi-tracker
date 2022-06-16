@@ -29,6 +29,7 @@ type Token struct {
 
 type TokenManager struct {
 	tokens *sync.Map
+	ticker *time.Ticker
 }
 
 var singleton *TokenManager
@@ -39,10 +40,31 @@ func GetAccountManager() *TokenManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &TokenManager{&sync.Map{}}
+			singleton = &TokenManager{&sync.Map{}, time.NewTicker(10 * time.Minute)}
+			go singleton.gc()
 		}
 	}
 	return singleton
+}
+
+func (t *TokenManager) gc() {
+	for {
+		now := <-t.ticker.C
+		cleaned := 0
+		log.Println("Start gc for TokenManager")
+		t.tokens.Range(func(key interface{}, val interface{}) bool {
+			token, ok := val.(*Token)
+			if !ok {
+				log.Panic("invalid token")
+			}
+			if token.expireTime.Before(now) {
+				t.tokens.Delete(key)
+				cleaned += 1
+			}
+			return true
+		})
+		log.Print("Cleaned", cleaned, "tokens")
+	}
 }
 
 func (t *TokenManager) ValidateAccountAndGenerateToken(name string, password string) (string, error) {
