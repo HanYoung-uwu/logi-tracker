@@ -24,6 +24,10 @@ const HistoryList = (props: any) => {
                         desc = `${User} ${Action}d ${ItemType} at ${Location} - ${Time.toLocaleDateString()}`; break;
                     case "set":
                         desc = `${User} ${Action} the quantity of ${ItemType} at ${Location} to ${Size} - ${Time.toLocaleDateString()}`; break;
+                    case "create stockpile":
+                        desc = `${User} ${Action} ${Location} - ${Time.toLocaleDateString()}`; break;
+                    case "delete stockpile":
+                        desc = `${User} ${Action} ${Location} - ${Time.toLocaleDateString()}`; break;
                 }
                 return (
                     <ListItem key={User + Location + ItemType + Size + Time.toString() + Action}>

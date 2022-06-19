@@ -49,7 +49,7 @@ func CreateStockpileHandler(c *gin.Context) {
 		return
 	}
 
-	database.GetInstance().CreateStockpile(json.Location, json.Code, _account.Clan)
+	database.GetInstance().CreateStockpile(json.Location, json.Code, _account.Clan, _account.Name)
 	c.JSON(http.StatusAccepted, "success")
 }
 
@@ -113,7 +113,7 @@ func DeleteStockpileHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := database.GetInstance().DeleteStockpile(json.Location, _account.Clan)
+	err := database.GetInstance().DeleteStockpile(json.Location, _account.Clan, _account.Name)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "stockpile doesn't exits")
 		return

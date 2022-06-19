@@ -48,7 +48,8 @@ type Location struct {
 }
 
 type HistoryRecord struct {
-	// 0 add, 1 retrieve, 2 delete, 3 set
+	// 0 add, 1 retrieve, 2 delete, 3 set,
+	// 4 add stockpile, 5 delete stockpile
 	Action   int
 	Time     time.Time
 	ItemType string
@@ -291,22 +292,28 @@ func (m *DataBaseManager) SetItem(location string, item string, size int, clan s
 	}(location, item, clan)
 }
 
-func (m *DataBaseManager) CreateStockpile(location string, code string, clan string) {
-	tx, err := m.db.Begin()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	stmt, err := tx.Prepare("insert into location(location, time, clan, code) values(?, ?, ?, ?)")
+func (m *DataBaseManager) CreateStockpile(location string, code string, clan string, user string) {
+	stmt, err := m.db.Prepare("insert into location(location, time, clan, code) values(?, ?, ?, ?)")
 	if err != nil {
 		log.Panic(err)
 	}
 	defer stmt.Close()
 	stmt.Exec(location, time.Now().Format(time.RFC3339), clan, code)
-	err = tx.Commit()
 	if err != nil {
 		log.Panic(err)
 	}
+
+	go func(location string, clan string, user string) {
+		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?)")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(4, location, time.Now().Format(time.RFC3339), clan, user)
+		if err != nil {
+			log.Panic(err)
+		}
+	}(location, clan, user)
 }
 
 func (m *DataBaseManager) AddAccount(name string, password string, clan string, permission int) error {
@@ -427,7 +434,7 @@ func (m *DataBaseManager) GetAllLocations(clan string) []Location {
 
 var ErrorLocationNotExists = errors.New("location doesn't exists")
 
-func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
+func (m *DataBaseManager) DeleteStockpile(location string, clan string, user string) error {
 	lock := m.getLocationLock(location, clan)
 	lock.Lock()
 	defer lock.Unlock()
@@ -456,6 +463,17 @@ func (m *DataBaseManager) DeleteStockpile(location string, clan string) error {
 	if err != nil {
 		log.Panic(err)
 	}
+	go func(location string, clan string, user string) {
+		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?)")
+		if err != nil {
+			log.Panic(err)
+		}
+		defer stmt.Close()
+		stmt.Exec(5, location, time.Now().Format(time.RFC3339), clan, user)
+		if err != nil {
+			log.Panic(err)
+		}
+	}(location, clan, user)
 	return nil
 }
 

@@ -156,6 +156,10 @@ const fetchHistory: (navigate: NavigateFunction) => Promise<Array<HistoryRecord>
                 action = "delete"; break;
             case 3:
                 action = "set"; break;
+            case 4:
+                action = "create stockpile"; break;
+            case 5:
+                action = "delete stockpile"; break;
         }
         result[i].Action = action;
         result[i].Time = new Date(result[i].Time);
