@@ -1,6 +1,6 @@
 import { Flex, HStack, VStack, Button, Spacer, Center, Input, Text, InputGroup, InputRightElement, Alert, AlertIcon } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react';
-import { checkNameExist, fetchAccountInfo } from '../api/apis';
+import { checkNameExist, fetchAccountInfo, AccountInfo } from '../api/apis';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL_ROOT } from '../config/config';
 
@@ -8,7 +8,11 @@ const RegisterPage = (props: any) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [clan, setClan] = useState('');
+    const [accountInfo, setAccountInfo] = useState<AccountInfo>({
+        Name: "",
+        Clan: "",
+        Permission: -1
+    });
     const [show, setShow] = useState(false);
     const [params, setParams] = useSearchParams();
     const [nameValid, setNameValid] = useState(false);
@@ -19,7 +23,7 @@ const RegisterPage = (props: any) => {
     useEffect(() => {
         let token = params.get("link");
         document.cookie = `token=${token}`;
-        fetchAccountInfo().then(info => { if (info) setClan(info.Clan); });
+        fetchAccountInfo().then(info => { if (info) setAccountInfo(info); });
     }, []);
 
     const handleClick = () => {
@@ -38,11 +42,12 @@ const RegisterPage = (props: any) => {
                 headers: headers,
                 body: JSON.stringify({
                     Name: username,
-                    Password: password
+                    Password: password,
+                    Clan: accountInfo.Clan
                 })
             });
             if (Math.floor(res.status / 100) == 2) {
-                navigate("/home", {replace: true});
+                navigate("/home", { replace: true });
             }
         };
         register();
@@ -68,13 +73,33 @@ const RegisterPage = (props: any) => {
         }
     };
 
+    const handleClan = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let info = accountInfo;
+        info.Clan = event.target.value;
+        setAccountInfo(info);
+    };
+
+    const getClanInput = () => {
+        if (accountInfo.Permission == 4) {
+            return (
+                <VStack width="100%">
+                    <Text fontSize='24px' alignSelf="flex-start">Clan</Text>
+                    <Input onChange={handleClan} />
+                </VStack>
+            );
+        } else {
+            return <></>;
+        }
+    };
+
     return (<Center>
         <VStack width={[
             '100%', // 0-30em
             '50%', // 30em-48em
             '30%', // 48em-62em
         ]} alignItems="flex-start">
-            <Text fontSize="32px">{`You've been invited to ${clan}`}</Text>
+            <Text fontSize="32px">{accountInfo.Permission == 4 ? "Create your own clan!" : `You've been invited to ${accountInfo.Clan}`}</Text>
+            {getClanInput()}
             <Text fontSize='24px'>Account</Text>
             <HStack width="100%">
                 <Input onChange={handleUserName}
@@ -84,7 +109,7 @@ const RegisterPage = (props: any) => {
                     <AlertIcon />
                     {nameValid ? "" : username == '' ? "name empty" : "name already existed"}
                 </Alert>
-                </HStack>
+            </HStack>
             <Text fontSize='24px'>Password</Text>
             <HStack width="100%">
                 <InputGroup size='md'>

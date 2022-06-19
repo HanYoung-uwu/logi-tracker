@@ -22,7 +22,7 @@ const LoginPage = observer((prop: any) => {
         });
     };
 
-    if (accountInfo.getAccountName() != '') {
+    if (accountInfo.permission == 0 || accountInfo.permission == 1 || accountInfo.permission == 2) {
         return <Navigate to="/home" replace={true} />;
     }
 

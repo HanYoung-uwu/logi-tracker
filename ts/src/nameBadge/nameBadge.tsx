@@ -51,9 +51,8 @@ const NameBadge = observer((props: any) => {
             }
         };
         init();
-    }, []);
+    }, [accountInfo]);
     return (
-
         <Popover isOpen={isOpen}>
             <PopoverTrigger>
                 <Button onClick={handleClick}>

@@ -1,9 +1,19 @@
-import { Text, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
+import { Text, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
+import { Navigate } from 'react-router-dom';
 import { ItemsList } from './itemsList';
 import { HistoryList } from './historyList';
 import { LocationsList } from './locationsList';
+import { useContext } from 'react';
+import { AccountInfoContext } from '../login/accountInfoStore';
 
-const HomePage = (props: any) => {
+const HomePage = observer((props: any) => {
+    const accountInfo = useContext(AccountInfoContext);
+
+    if (accountInfo.permission != -1 && accountInfo.permission != 0 && accountInfo.permission != 1 && accountInfo.permission != 2) {
+        return <Navigate to="/login" replace={true} />;
+    }
+
     return (
         <Tabs isLazy>
             <TabList>
@@ -25,6 +35,6 @@ const HomePage = (props: any) => {
             </TabPanels>
         </Tabs>
     );
-};
+});
 
 export { HomePage };

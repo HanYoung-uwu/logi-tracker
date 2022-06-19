@@ -10,30 +10,35 @@ import {
     Input,
     InputGroup,
     InputRightElement
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
 import { useEffect, useState, useContext } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { fetchClanInviteLink } from '../api/apis';
+import { fetchClanInviteLink, fetchClanAdminInviteLink } from '../api/apis';
 import { WEBSITE_ROOT } from '../config/config';
 import { AccountInfoContext } from '../login/accountInfoStore';
 
-const InviteUserButton = (props: any) => {
+const InviteUserButton = observer((props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [inviteLink, setInviteLink] = useState('');
     const [input, setInput] = useState<HTMLInputElement | null>();
     const accountInfo = useContext(AccountInfoContext);
 
     useEffect(() => {
-        if (isOpen) {
-            fetchClanInviteLink().then((token) => {
-                setInviteLink(`${WEBSITE_ROOT}/invite?link=${token}`);
-            });
+        if (accountInfo.permission == 0 || accountInfo.permission == 1) {
+            let fetchLinkFunc: any;
+            if (accountInfo.permission == 0) {
+                fetchLinkFunc = fetchClanAdminInviteLink;
+            } else if (accountInfo.permission == 1) {
+                fetchLinkFunc = fetchClanInviteLink;
+            }
+            if (isOpen) {
+                fetchLinkFunc().then((token: string) => {
+                    setInviteLink(`${WEBSITE_ROOT}/invite?link=${token}`);
+                });
+            }
         }
     }, [isOpen]);
-
-    if (accountInfo.getAccountName() == '') {
-        return <></>;
-    }
 
     return (<>
         <Button onClick={onOpen}>
@@ -54,7 +59,7 @@ const InviteUserButton = (props: any) => {
                         </Text>
                         <InputGroup>
                             <Input ref={(input) => setInput(input)} pr='4.5rem' variant='filled' isReadOnly={true} value={inviteLink} />
-                            <InputRightElement width="4.5rem" children={<Button onClick={() => {if (input) input.select(); document.execCommand('copy');}}>Copy</Button>} />
+                            <InputRightElement width="4.5rem" children={<Button onClick={() => { if (input) input.select(); document.execCommand('copy'); }}>Copy</Button>} />
                         </InputGroup>
                     </VStack>
                 </ModalBody>
@@ -67,6 +72,6 @@ const InviteUserButton = (props: any) => {
             </ModalContent>
         </Modal>
     </>);
-};
+});
 
 export default InviteUserButton;

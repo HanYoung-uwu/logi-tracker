@@ -4,7 +4,9 @@ import { createContext, useContext } from "react"
 class AccountInfo {
     name: string = ''
     clan: string = ''
-    permission: number = -1
+    permission: -1 | 0 | 1 | 2 | 3 | 4 = -1 // -1 undefined, 0 admin, 1 clan admin, 2 clan man,
+    // 3 is temporary account for invitation links,
+    // 4 is clan admin invitation links
 
     constructor() {
         makeAutoObservable(this);
@@ -24,7 +26,7 @@ class AccountInfo {
         return this.clan;
     }
 
-    setPermission(permission: number) {
+    setPermission(permission: -1 | 0 | 1 | 2 | 3 | 4) {
         this.permission = permission;
     }
     getPermission() {

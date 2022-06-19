@@ -11,7 +11,8 @@ interface ItemRecord {
 interface AccountInfo {
     Name: string
     Clan: string
-    Permission: 0 | 1 | 2 // 0 admin, 1 clan admin, 2 clan man
+    Permission: -1 | 0 | 1 | 2 | 3 | 4 // 0 admin, 1 clan admin, 2 clan man, 
+                                       // 3 clan invite, 4 clan admin invite, -1 undefined
 }
 
 interface Location {
@@ -29,11 +30,11 @@ interface HistoryRecord {
     Size: number
 }
 
-const fetchAllItems: (navigate: NavigateFunction) => Promise<Array<ItemRecord> | void> = async (navigate: NavigateFunction) => {
+const fetchAllItems: () => Promise<Array<ItemRecord> | void> = async () => {
     let url = API_URL_ROOT + "/user/all_items"
     let res = await fetch(url);
     if (Math.floor(res.status / 100) != 2) {
-        navigate("/login", { replace: true });
+        return null;
     } else {
         return await res.json();
     }
@@ -51,6 +52,16 @@ const fetchAccountInfo: () => Promise<AccountInfo | null> = async () => {
 
 const fetchClanInviteLink: () => Promise<string | null> = async () => {
     let url = API_URL_ROOT + "/clan/invitation";
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) != 2) {
+        return null;
+    } else {
+        return (await res.json())["token"];
+    }
+};
+
+const fetchClanAdminInviteLink: () => Promise<string | null> = async () => {
+    let url = API_URL_ROOT + "/admin/invite_clan";
     let res = await fetch(url);
     if (Math.floor(res.status / 100) != 2) {
         return null;
@@ -290,6 +301,7 @@ export {
     refreshStockpile,
     checkNameExist,
     login,
-    logout
+    logout,
+    fetchClanAdminInviteLink
 };
-export type { Location, HistoryRecord };
+export type { Location, HistoryRecord, AccountInfo };

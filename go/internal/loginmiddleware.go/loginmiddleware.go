@@ -15,10 +15,7 @@ import (
 type User struct {
 	Name     string `form:"Name" json:"Name" xml:"Name"  binding:"required"`
 	Password string `form:"Password" json:"Password" xml:"Password" binding:"required"`
-}
-
-type ClanAdminInvitation struct {
-	Clan string `form:"Clan" json:"Clan" xml:"Clan" binding:"required"`
+	Clan     string `form:"Clan" json:"Clan" xml:"Clan" binding:"-"`
 }
 
 type Token struct {
@@ -123,8 +120,8 @@ func (t *TokenManager) GenerateInvitationToken(clan string) string {
 	return string(token)
 }
 
-func (t *TokenManager) GenerateClanAdminInvitationToken(clan string) string {
-	account := &database.Account{Name: "tmp", Permission: database.ClanAdminInvitationLinkAccount, Clan: clan}
+func (t *TokenManager) GenerateClanAdminInvitationToken() string {
+	account := &database.Account{Name: "tmp", Permission: database.ClanAdminInvitationLinkAccount, Clan: ""}
 
 	token := utility.RandBytes(92)
 	for {
@@ -140,6 +137,22 @@ func (t *TokenManager) GenerateClanAdminInvitationToken(clan string) string {
 }
 
 func DefaultAuthHandler(c *gin.Context) {
+	token, err := c.Cookie("token")
+	if err == nil {
+		account, err := GetAccountManager().GetAccountByToken(token)
+		if err == nil {
+			if account.Permission == database.AdminAccount || account.Permission == database.ClanAdminAccount || account.Permission == database.NormalAccount {
+				c.Set("account", account)
+				c.Next()
+				return
+			}
+		}
+	}
+	c.Abort()
+	c.JSON(http.StatusUnauthorized, gin.H{"reason": "unauthorized"})
+}
+
+func UserInfoAuthHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
 		account, err := GetAccountManager().GetAccountByToken(token)
@@ -250,14 +263,21 @@ func CreateUserFromInvitationLinkHandler(c *gin.Context) {
 		account, err := GetAccountManager().GetAccountByToken(token)
 		if err == nil && account.Permission >= database.InvitationLinkAccount {
 			var permission int
+			clan := account.Clan
 			switch account.Permission {
 			case database.ClanAdminInvitationLinkAccount:
 				permission = database.ClanAdminAccount
+				if json.Clan == "" {
+					c.JSON(http.StatusBadRequest, "must specify clan")
+					return
+				} else {
+					clan = json.Clan
+				}
 			case database.InvitationLinkAccount:
 				permission = database.NormalAccount
 			}
 
-			err = database.GetInstance().AddAccount(json.Name, json.Password, account.Clan, permission)
+			err = database.GetInstance().AddAccount(json.Name, json.Password, clan, permission)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"message": err.Error(),
@@ -293,13 +313,7 @@ func GenerateInvitationLinkHandler(c *gin.Context) {
 }
 
 func GenerateClanAdminInvitationLinkHandler(c *gin.Context) {
-	var json ClanAdminInvitation
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	token := GetAccountManager().GenerateClanAdminInvitationToken(json.Clan)
+	token := GetAccountManager().GenerateClanAdminInvitationToken()
 	c.JSON(http.StatusAccepted, gin.H{"token": token})
 }
 

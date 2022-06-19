@@ -104,10 +104,9 @@ const ItemTableRow = (props: { record: { location: string, size: number, item: s
 
 const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
     const [rows, setRows] = useState(Array<JSX.Element>());
-    let navigate = useNavigate();
-
+    
     const fetchAndConstructTable = async () => {
-        let items = await fetchAllItems(navigate);
+        let items = await fetchAllItems();
         if (items) {
             setRows(items.map(record => <ItemTableRow record={record}
                 key={JSON.stringify(record)}

@@ -18,6 +18,9 @@ func main() {
 	basePath.POST("/check_name", handlers.CheckAccountNameExist)
 	basePath.POST("/admin/create_admin", loginmiddleware.CreateAdminOnFirstRequestHandler)
 
+	userInfo := basePath.Group("/user", loginmiddleware.UserInfoAuthHandler)
+	userInfo.GET("/info", handlers.GetBasicAccountInfo)
+
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
 	authorized.GET("/logout", loginmiddleware.LogoutHandler)
@@ -28,13 +31,12 @@ func main() {
 	authorized.POST("/delete_item", handlers.DeleteItemHandler)
 	authorized.POST("/set_item", handlers.SetItemHandler)
 	authorized.POST("/refresh_stockpile", handlers.RefreshStockpileHandler)
-	authorized.GET("/info", handlers.GetBasicAccountInfo)
 	authorized.GET("/history", handlers.GetClanHistoryHandler)
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)
 
 	admins := basePath.Group("/admin", loginmiddleware.AdminAuthHandler)
-	admins.POST("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)
+	admins.GET("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)
 	r.Run()
 }
