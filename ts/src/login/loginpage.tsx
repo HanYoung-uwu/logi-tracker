@@ -1,17 +1,17 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Input, Flex, Text, HStack, VStack, InputRightElement, Button, InputGroup } from '@chakra-ui/react'
 import { API_URL_ROOT } from '../config/config';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { AccountInfoContext } from './accountInfoStore';
 import { login } from '../api/apis';
+import { observer } from 'mobx-react-lite';
 
-const LoginPage = (prop: any) => {
+const LoginPage = observer((prop: any) => {
     const [account, setAccount] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [show, setShow] = React.useState(false);
     const accountInfo = useContext(AccountInfoContext);
-
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const handleClick = () => setShow(!show);
     const handleLogin = () => {
         login(account, password).then(response => {
@@ -21,6 +21,11 @@ const LoginPage = (prop: any) => {
             }
         });
     };
+
+    if (accountInfo.getAccountName() != '') {
+        return <Navigate to="/home" replace={true} />;
+    }
+
     return (
         <Flex justify="center">
             <VStack {...prop} justify="right">
@@ -44,6 +49,6 @@ const LoginPage = (prop: any) => {
                 </Button>
             </VStack>
         </Flex>);
-}
+});
 
 export default LoginPage

@@ -20,6 +20,7 @@ func main() {
 
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
+	authorized.GET("/logout", loginmiddleware.LogoutHandler)
 	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)
 	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)

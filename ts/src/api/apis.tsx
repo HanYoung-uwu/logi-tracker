@@ -270,6 +270,11 @@ const login: (name: string, password: string) => Promise<Response> = (name, pass
         })
     });
     return res;
+};
+
+const logout = () => {
+    let url = API_URL_ROOT + "/user/logout";
+    fetch(url);
 }
 
 export {
@@ -284,6 +289,7 @@ export {
     deleteStockpile,
     refreshStockpile,
     checkNameExist,
-    login
+    login,
+    logout
 };
 export type { Location, HistoryRecord };

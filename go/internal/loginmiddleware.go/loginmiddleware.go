@@ -302,3 +302,20 @@ func GenerateClanAdminInvitationLinkHandler(c *gin.Context) {
 	token := GetAccountManager().GenerateClanAdminInvitationToken(json.Clan)
 	c.JSON(http.StatusAccepted, gin.H{"token": token})
 }
+
+func LogoutHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+	GetAccountManager().tokens.Delete(_account.Name)
+	c.SetCookie("token", "", 0, "", "", !utility.DebugEnvironment, !utility.DebugEnvironment)
+	c.JSON(http.StatusAccepted, "")
+}
