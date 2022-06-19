@@ -109,9 +109,11 @@ const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
     const fetchAndConstructTable = async () => {
         let items = await fetchAllItems(navigate);
         if (items) {
-            setRows(items.map(record => <ItemTableRow record={record} refreshCallback={fetchAndConstructTable} />));
+            setRows(items.map(record => <ItemTableRow record={record}
+                key={JSON.stringify(record)}
+                refreshCallback={fetchAndConstructTable} />));
         }
-    }
+    };
 
     props?.fetchRef(fetchAndConstructTable);
 
@@ -135,7 +137,7 @@ const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
                 </Tbody>
             </Table>
         </TableContainer>);
-}
+};
 
 const ItemsList = (props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -184,7 +186,7 @@ const ItemsList = (props: any) => {
                             <HStack>
                                 <Text>Stockpile</Text>
                                 <Select onChange={event => setSelectedLocation(event.target.value)}>
-                                    {locations?.map(({ location }) => <option value={location}>{location}</option>)}
+                                    {locations?.map(({ location }) => <option key={location} value={location}>{location}</option>)}
                                 </Select>
                                 <Input onChange={event => setQuantity(Number.parseInt(event.target.value))} type="number" placeholder='quantity'></Input>
                             </HStack>
