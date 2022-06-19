@@ -15,6 +15,7 @@ func main() {
 	basePath := r.Group("/api")
 	basePath.POST("/login", loginmiddleware.LoginHandler)
 	basePath.POST("/register", loginmiddleware.CreateUserFromInvitationLinkHandler)
+	basePath.POST("/check_name", handlers.CheckAccountNameExist)
 	basePath.POST("/admin/create_admin", loginmiddleware.CreateAdminOnFirstRequestHandler)
 
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
@@ -34,6 +35,5 @@ func main() {
 
 	admins := basePath.Group("/admin", loginmiddleware.AdminAuthHandler)
 	admins.POST("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)
-
 	r.Run()
 }

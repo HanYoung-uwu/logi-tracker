@@ -14,9 +14,10 @@ import (
 )
 
 type DataBaseManager struct {
-	db           *sql.DB
-	itemLock     *sync.Map
-	locationLock *sync.Map
+	db              *sql.DB
+	itemLock        *sync.Map
+	locationLock    *sync.Map
+	registeredNames *sync.Map
 }
 
 // 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links,
@@ -79,10 +80,34 @@ func GetInstance() *DataBaseManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &DataBaseManager{initDatabase(), &sync.Map{}, &sync.Map{}}
+			singleton = &DataBaseManager{initDatabase(),
+				&sync.Map{},
+				&sync.Map{},
+				&sync.Map{}}
+			singleton.initAccount()
 		}
 	}
 	return singleton
+}
+
+func (m *DataBaseManager) initAccount() {
+	stmt, err := m.db.Prepare("select name from account")
+	if err != nil {
+		log.Panic(err)
+	}
+	rows, err := stmt.Query()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	for rows.Next() {
+		var name string
+		err = rows.Scan(&name)
+		if err != nil {
+			log.Panic(err)
+		}
+		m.registeredNames.Store(name, true)
+	}
 }
 
 func (m *DataBaseManager) getItemLock(location string, item string, clan string) *sync.Mutex {
@@ -315,7 +340,7 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 	if err != nil {
 		log.Panic(err)
 	}
-
+	m.registeredNames.Store(name, true)
 	return nil
 }
 
@@ -486,4 +511,9 @@ func (m *DataBaseManager) RefreshStockpile(location string, clan string) {
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func (m *DataBaseManager) IsNameExist(name string) bool {
+	_, found := m.registeredNames.Load(name)
+	return found
 }

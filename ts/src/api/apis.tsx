@@ -229,6 +229,45 @@ const refreshStockpile = async (name: string, navigate: NavigateFunction) => {
     return true;
 };
 
+const checkNameExist: (name: string) => Promise<boolean> = async (name: string) => {
+    let url = API_URL_ROOT + "/check_name";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name
+        })
+    });
+    if (Math.floor(res.status / 100) == 2) {
+        let json = await res.json();
+        return json.exist;
+    } else {
+        console.warn("check name exist failed")
+    };
+    return false;
+};
+
+const login: (name: string, password: string) => Promise<Response> = (name, password) => {
+    let url = API_URL_ROOT + "/login"
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            Name: name,
+            Password: password
+        })
+    });
+    return res;
+}
+
 export {
     fetchAllItems,
     fetchAccountInfo,
@@ -239,6 +278,8 @@ export {
     fetchHistory,
     addStockpile,
     deleteStockpile,
-    refreshStockpile
+    refreshStockpile,
+    checkNameExist,
+    login
 };
 export type { Location, HistoryRecord };

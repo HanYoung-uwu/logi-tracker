@@ -56,3 +56,7 @@ def invite_clan():
     print(body)
     res = requests.post(url + "/register", cookies={"token": body["token"]}, json={"Name": "clanadmin", "Password": "123456789123456789"})
     print_res(res)
+
+def check_name(name):
+    res = requests.post(url + "/check_name", json={"name": name})
+    print_res(res)

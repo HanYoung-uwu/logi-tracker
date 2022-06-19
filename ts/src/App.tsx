@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import { BrowserRouter, Routes, Route, Link as RLink } from "react-router-dom";
 
 import {
@@ -10,10 +10,10 @@ import {
   Code,
   Grid,
   Flex
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 
-import Theme from "./theme"
-import LoginPage from "./login/loginpage"
+import Theme from "./theme";
+import LoginPage from "./login/loginpage";
 import { HomePage } from "./homepage/homepage";
 import HeaderPanel from "./navigationHeader/navigationHeader";
 import RegisterPage from "./registerPage/registerPage";

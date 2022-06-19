@@ -3,6 +3,7 @@ import { Input, Flex, Text, HStack, VStack, InputRightElement, Button, InputGrou
 import { API_URL_ROOT } from '../config/config';
 import { useNavigate } from "react-router-dom";
 import { AccountInfoContext } from './accountInfoStore';
+import { login } from '../api/apis';
 
 const LoginPage = (prop: any) => {
     const [account, setAccount] = React.useState('');
@@ -13,36 +14,21 @@ const LoginPage = (prop: any) => {
     let navigate = useNavigate();
     const handleClick = () => setShow(!show);
     const handleLogin = () => {
-        let url = API_URL_ROOT + "/login"
-        let headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        };
-
-        const login = async () => {
-            let res = await fetch(url, {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify({
-                    Name: account,
-                    Password: password
-                })
-            });
-            if (Math.floor(res.status / 100) == 2) {
+        login(account, password).then(response => {
+            if (Math.floor(response.status / 100) == 2) {
                 accountInfo.setAccountName(account);
                 navigate("/home", { replace: true });
             }
-        };
-        login();
+        });
     };
     return (
         <Flex justify="center">
             <VStack {...prop} justify="right">
-                <HStack>
+                <VStack alignItems="flex-start" width="100%" >
                     <Text fontSize='24px'>Account</Text>
                     <Input onChange={(event) => setAccount(event.target.value)} />
-                </HStack>
-                <HStack>
+                </VStack>
+                <VStack alignItems="flex-start" width="100%">
                     <Text fontSize='24px'>Password</Text>
                     <InputGroup size='md'>
                         <Input type={show ? 'text' : 'password'} onChange={(event) => setPassword(event.target.value)} />
@@ -52,8 +38,8 @@ const LoginPage = (prop: any) => {
                             </Button>
                         </InputRightElement>
                     </InputGroup>
-                </HStack>
-                <Button h='1.75rem' size='sm' onClick={handleLogin}>
+                </VStack>
+                <Button bgColor="green.400" size='md' onClick={handleLogin} alignSelf="flex-end">
                     Login
                 </Button>
             </VStack>

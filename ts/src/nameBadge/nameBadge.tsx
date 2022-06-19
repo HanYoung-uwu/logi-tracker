@@ -8,7 +8,7 @@ import { AccountInfoContext } from '../login/accountInfoStore';
 
 const NameBadge = observer((props: any) => {
     let navigate = useNavigate();
-    const [handleClick, setHandleClick] = useState<any>();
+    const [handleClick, setHandleClick] = useState<() => void>(() => navigate("/login", { replace: true }));
     const accountInfo = useContext(AccountInfoContext);
 
     useEffect(() => {
@@ -16,18 +16,21 @@ const NameBadge = observer((props: any) => {
             let info = await fetchAccountInfo();
             if (info) {
                 setHandleClick(() => { console.log("TODO: ACCOUNT SETTING PAGE") });
-                accountInfo.name = info.Name;
+                accountInfo.setClan(info.Clan);
+                accountInfo.setPermission(info.Permission);
             } else {
                 setHandleClick(() => navigate("/login", { replace: true }));
             }
         };
-        init();
-    }, []);
+        if (accountInfo.name != '') {
+            init();
+        }
+    }, [accountInfo.name]);
     return (
         <Button onClick={handleClick}>
             <HStack>
                 <Icon as={MdAccountCircle} boxSize={6} />
-                <Text>{accountInfo.name == '' ? "SIGN IN" : accountInfo.name}</Text>
+                <Text>{accountInfo.getAccountName() == '' ? "SIGN IN" : accountInfo.getAccountName()}</Text>
             </HStack>
         </Button>
     )

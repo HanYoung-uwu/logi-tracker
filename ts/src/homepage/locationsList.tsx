@@ -65,6 +65,9 @@ const LocationsList = (props: any) => {
     const refreshRows = async () => {
         let locations = await fetchLocations();
         if (locations) {
+            locations.sort((a, b) => {
+                return a.time.valueOf() - b.time.valueOf();
+            });
             setRows(locations.map(location => <LocationRow {...location} refreshFunc={refreshRows} />));
         }
     };

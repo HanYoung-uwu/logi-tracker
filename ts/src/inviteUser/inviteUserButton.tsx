@@ -11,15 +11,17 @@ import {
     InputGroup,
     InputRightElement
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { fetchClanInviteLink } from '../api/apis';
 import { WEBSITE_ROOT } from '../config/config';
+import { AccountInfoContext } from '../login/accountInfoStore';
 
 const InviteUserButton = (props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [inviteLink, setInviteLink] = useState('');
     const [input, setInput] = useState<HTMLInputElement | null>();
+    const accountInfo = useContext(AccountInfoContext);
 
     useEffect(() => {
         if (isOpen) {
@@ -28,6 +30,10 @@ const InviteUserButton = (props: any) => {
             });
         }
     }, [isOpen]);
+
+    if (accountInfo.getAccountName() == '') {
+        return <></>;
+    }
 
     return (<>
         <Button onClick={onOpen}>

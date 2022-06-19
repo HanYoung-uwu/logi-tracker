@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Logi Tracker",
+  "name": "Logi tracker for foxholegame",
   "icons": [
     {
       "src": "favicon.ico",

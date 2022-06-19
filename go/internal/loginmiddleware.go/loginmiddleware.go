@@ -40,7 +40,7 @@ func GetAccountManager() *TokenManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &TokenManager{&sync.Map{}, time.NewTicker(10 * time.Minute)}
+			singleton = &TokenManager{&sync.Map{}, time.NewTicker(10 * time.Hour)}
 			go singleton.gc()
 		}
 	}
@@ -241,9 +241,8 @@ func CreateUserFromInvitationLinkHandler(c *gin.Context) {
 		c.JSON(http.StatusNotAcceptable, gin.H{"reason": "password or name too short"})
 		return
 	}
-	if len(json.Password) < 100 {
-		padding := make([]byte, 100-len(json.Password))
-		json.Password = string(append(padding, json.Password...))
+	if len(json.Password) > 72 {
+		json.Password = json.Password[:71]
 	}
 
 	token, err := c.Cookie("token")
