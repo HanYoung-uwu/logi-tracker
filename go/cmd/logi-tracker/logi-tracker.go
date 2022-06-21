@@ -13,6 +13,7 @@ func main() {
 
 	r := gin.Default()
 	basePath := r.Group("/api")
+	basePath.GET("/logout", loginmiddleware.LogoutHandler)
 	basePath.POST("/login", loginmiddleware.LoginHandler)
 	basePath.POST("/register", loginmiddleware.CreateUserFromInvitationLinkHandler)
 	basePath.POST("/check_name", handlers.CheckAccountNameExist)
@@ -23,7 +24,6 @@ func main() {
 
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
-	authorized.GET("/logout", loginmiddleware.LogoutHandler)
 	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)
 	authorized.GET("/all_stockpiles", handlers.GetAllLocationsHandler)

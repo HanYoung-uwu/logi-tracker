@@ -284,7 +284,7 @@ const login: (name: string, password: string) => Promise<Response> = (name, pass
 };
 
 const logout = () => {
-    let url = API_URL_ROOT + "/user/logout";
+    let url = API_URL_ROOT + "/logout";
     fetch(url);
 }
 

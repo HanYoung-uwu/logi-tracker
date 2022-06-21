@@ -59,6 +59,12 @@ type HistoryRecord struct {
 	User     string
 }
 
+type Token struct {
+	Value      string
+	ExpireTime time.Time
+	Account    *Account
+}
+
 var lock = &sync.Mutex{}
 var singleton *DataBaseManager
 
@@ -71,6 +77,7 @@ func initDatabase() *sql.DB {
 	CREATE TABLE IF NOT EXISTS item (type TEXT, location TEXT, size INTEGER, clan TEXT);
 	CREATE TABLE IF NOT EXISTS history (action INTEGER, user TEXT, clan TEXT, type TEXT, size INTEGER, location TEXT, time DATETIME);
 	CREATE INDEX IF NOT EXISTS idx_item_history on history (clan, location);
+	CREATE TABLE IF NOT EXISTS tokens (token TEXT, expire_time DATETIME, account_name TEXT);
 	`
 	m_db.Exec(sqlStmt)
 	return m_db
@@ -534,4 +541,63 @@ func (m *DataBaseManager) RefreshStockpile(location string, clan string) {
 func (m *DataBaseManager) IsNameExist(name string) bool {
 	_, found := m.registeredNames.Load(name)
 	return found
+}
+
+func (m *DataBaseManager) SaveTokens(tokens []interface{}) {
+	stmt, err := m.db.Prepare("insert into tokens(token, expire_time, account_name) values(?, ?, ?)")
+	if err != nil {
+		log.Panic(err)
+	}
+	for _, token := range tokens {
+		_token, ok := token.(Token)
+		if !ok {
+			log.Panic("passed non Token array!")
+		}
+		_, err = stmt.Exec(_token.Value, _token.ExpireTime, _token.Account.Name)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+}
+
+func (m *DataBaseManager) DeleteTokens(tokens []interface{}) {
+	stmt, err := m.db.Prepare("delete from tokens where token = ?")
+	if err != nil {
+		log.Panic(err)
+	}
+	for _, token := range tokens {
+		_token, ok := token.(string)
+		if !ok {
+			log.Panic("passed non string array!")
+		}
+		_, err = stmt.Exec(_token)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+}
+
+func (m *DataBaseManager) LoadTokens() []Token {
+	stmt := `
+	select t.token, t.expire_time, t.account_name, a.clan, a.permission
+	from tokens as t
+	join account as a
+	where a.name = t.account_name
+	`
+	rows, err := m.db.Query(stmt)
+	if err != nil {
+		log.Panic(err)
+	}
+	result := make([]Token, 0, 50)
+	for rows.Next() {
+		var token string
+		var expire_time time.Time
+		var account_name string
+		var clan string
+		var permission int
+		rows.Scan(&token, &expire_time, &account_name, &clan, &permission)
+		account := &Account{account_name, permission, clan}
+		result = append(result, Token{token, expire_time, account})
+	}
+	return result
 }

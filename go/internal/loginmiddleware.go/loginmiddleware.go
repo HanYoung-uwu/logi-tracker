@@ -12,21 +12,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Token = database.Token
+
 type User struct {
 	Name     string `form:"Name" json:"Name" xml:"Name"  binding:"required"`
 	Password string `form:"Password" json:"Password" xml:"Password" binding:"required"`
 	Clan     string `form:"Clan" json:"Clan" xml:"Clan" binding:"-"`
 }
 
-type Token struct {
-	value      string
-	expireTime time.Time
-	account    *database.Account
+type TokenArrayWithMutex struct {
+	tokens []interface{}
+	lock   *sync.Mutex
+}
+
+func makeTokenArrayWithMutex() TokenArrayWithMutex {
+	return TokenArrayWithMutex{make([]interface{}, 0, 50), &sync.Mutex{}}
 }
 
 type TokenManager struct {
-	tokens *sync.Map
-	ticker *time.Ticker
+	tokens         *sync.Map // string, *database.Token
+	ticker         *time.Ticker
+	tokensToWrite  *TokenArrayWithMutex
+	tokensToDelete *TokenArrayWithMutex
 }
 
 var singleton *TokenManager
@@ -37,30 +44,59 @@ func GetAccountManager() *TokenManager {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleton == nil {
-			singleton = &TokenManager{&sync.Map{}, time.NewTicker(10 * time.Hour)}
-			go singleton.gc()
+			tokensToWrite := makeTokenArrayWithMutex()
+			tokensToDelete := makeTokenArrayWithMutex()
+			singleton =
+				&TokenManager{
+					&sync.Map{},
+					time.NewTicker(10 * time.Hour),
+					&tokensToWrite,
+					&tokensToDelete}
+			go singleton.startPeriodicTasks()
+			go singleton.init()
 		}
 	}
 	return singleton
 }
 
-func (t *TokenManager) gc() {
+func (t *TokenManager) startPeriodicTasks() {
 	for {
 		now := <-t.ticker.C
 		cleaned := 0
+		t.tokensToDelete.lock.Lock()
 		log.Println("Start gc for TokenManager")
 		t.tokens.Range(func(key interface{}, val interface{}) bool {
 			token, ok := val.(*Token)
 			if !ok {
 				log.Panic("invalid token")
 			}
-			if token.expireTime.Before(now) {
+			if token.ExpireTime.Before(now) {
 				t.tokens.Delete(key)
+				t.tokensToDelete.tokens = append(t.tokensToDelete.tokens, key)
 				cleaned += 1
 			}
 			return true
 		})
-		log.Print("Cleaned", cleaned, "tokens")
+		log.Print("Cleaned ", cleaned, " tokens")
+
+		database.GetInstance().DeleteTokens(t.tokensToDelete.tokens)
+		log.Print("Deleted from database ", len(t.tokensToDelete.tokens), " tokens")
+		t.tokensToDelete.tokens = make([]interface{}, 0, 50)
+		t.tokensToDelete.lock.Unlock()
+
+		t.tokensToWrite.lock.Lock()
+		database.GetInstance().SaveTokens(t.tokensToWrite.tokens)
+		log.Print("Saved into database ", len(t.tokensToWrite.tokens), " tokens")
+		t.tokensToWrite.tokens = make([]interface{}, 0, 50)
+		t.tokensToWrite.lock.Unlock()
+	}
+}
+
+func (t *TokenManager) init() {
+	db := database.GetInstance()
+	tokens := db.LoadTokens()
+	for _, token := range tokens {
+		t.tokens.Store(token.Value, &token)
 	}
 }
 
@@ -76,9 +112,15 @@ func (t *TokenManager) ValidateAccountAndGenerateToken(name string, password str
 
 	accessCookie := utility.RandBytes(256)
 	for {
-		if _, exists := t.tokens.LoadOrStore(string(accessCookie), &Token{string(accessCookie), time.Now().Add(1000000000 * 3600 * 24 * 14), account}); exists {
+		token := Token{Value: string(accessCookie), ExpireTime: time.Now().Add(1000000000 * 3600 * 24 * 14), Account: account}
+		if _, exists := t.tokens.LoadOrStore(string(accessCookie), &token); exists {
 			accessCookie = utility.RandBytes(256)
 		} else {
+			go func(token Token) {
+				t.tokensToWrite.lock.Lock()
+				defer t.tokensToWrite.lock.Unlock()
+				t.tokensToWrite.tokens = append(t.tokensToWrite.tokens, token)
+			}(token)
 			break
 		}
 	}
@@ -95,11 +137,10 @@ func (t *TokenManager) GetAccountByToken(token string) (*database.Account, error
 		if !ok {
 			log.Panic("m_token is not a *Token")
 		}
-		if m_token.expireTime.Before(time.Now()) {
-			t.tokens.Delete(token)
+		if m_token.ExpireTime.Before(time.Now()) {
 			return nil, ErrorInvalideToken
 		}
-		return m_token.account, nil
+		return m_token.Account, nil
 	}
 	return nil, ErrorInvalideToken
 }
@@ -110,7 +151,7 @@ func (t *TokenManager) GenerateInvitationToken(clan string) string {
 	token := utility.RandBytes(92)
 	for {
 		// invitation links are only valid for one day
-		if _, exists := t.tokens.LoadOrStore(string(token), &Token{string(token), time.Now().Add(1000000000 * 3600 * 24), account}); exists {
+		if _, exists := t.tokens.LoadOrStore(string(token), &Token{Value: string(token), ExpireTime: time.Now().Add(1000000000 * 3600 * 24), Account: account}); exists {
 			token = utility.RandBytes(92)
 		} else {
 			break
@@ -126,7 +167,7 @@ func (t *TokenManager) GenerateClanAdminInvitationToken() string {
 	token := utility.RandBytes(92)
 	for {
 		// invitation links are only valid for one day
-		if _, exists := t.tokens.LoadOrStore(string(token), &Token{string(token), time.Now().Add(1000000000 * 3600 * 24), account}); exists {
+		if _, exists := t.tokens.LoadOrStore(string(token), &Token{Value: string(token), ExpireTime: time.Now().Add(1000000000 * 3600 * 24), Account: account}); exists {
 			token = utility.RandBytes(92)
 		} else {
 			break
@@ -318,18 +359,17 @@ func GenerateClanAdminInvitationLinkHandler(c *gin.Context) {
 }
 
 func LogoutHandler(c *gin.Context) {
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	token, err := c.Cookie("token")
+	if err == nil {
+		go func(token string) {
+			t := GetAccountManager()
+			t.tokensToDelete.lock.Lock()
+			defer t.tokensToWrite.lock.Unlock()
+			t.tokensToDelete.tokens = append(t.tokensToDelete.tokens, token)
+			t.tokens.Delete(token)
+		}(token)
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-	GetAccountManager().tokens.Delete(_account.Name)
+
 	c.SetCookie("token", "", 0, "", "", !utility.DebugEnvironment, !utility.DebugEnvironment)
 	c.JSON(http.StatusAccepted, "")
 }
