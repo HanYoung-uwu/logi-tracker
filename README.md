@@ -1,19 +1,30 @@
 # Logi-Tracker
 Logistics tracker for [Foxhole Game](https://foxholegame.com).
 
-This is backend and front end mono repo. Backend is written in go and located in `go`, the front end is written in typescript and located in `ts`.
+This is backend and frontend mono repo. Backend is written in go and located in `go`, the front end is written in typescript and located in `ts`.
 
-A simple API test python script named `api-test.py` is in this directory .
+A simple API test python script named `api-test.py` is in this directory(not up to date).
 
 This is a work in progress.
 
 I aim to support:
 - [x] Invitation link to invite clans for admin
 - [x] Invitation link to invite members for clan leader
-- [ ] Create, read, update, delete of stockpiles as well as its contents
+- [x] Create, read, update, delete of stockpiles as well as its contents
 - [ ] Reminder of soon-to-be expired stockpiles
 - [ ] Stockpile sharing between friendly clans
-- [ ] Stockpile history inside clan
+- [x] Stockpile history inside clan
+
+## Todo list
+- [ ] catalog tab or each section, like guns, shells, vehicles
+- [ ] account page for setting password, delete account etc.
+- [ ] clan admin manage page for kicking off memebers and add promote memebers to admin
+- [ ] don't use cookie for account creating
+- [ ] cache item icons in local storage
+- [ ] stockpile item search
+- [ ] ability for clan admin to publish item requests
+- [ ] use discord api to notify expire stockpile
+- [ ] polish UI (Long term)
 
 ## How to run it locally
 ### Backend
