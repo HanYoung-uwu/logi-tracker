@@ -37,7 +37,7 @@ func CreateAdminOnFirstRequestHandler(c *gin.Context) {
 				json.Password = json.Password[:71]
 			}
 
-			// if database file has already exist, is also not first time
+			// if database file has already exist, it's also not first time
 			_, err := os.Stat(utility.DatabasePath)
 			if err != nil && errors.Is(err, fs.ErrNotExist) {
 				err := database.GetInstance().AddAccount(json.Name, json.Password, "admin", database.AdminAccount)
