@@ -12,6 +12,10 @@ def print_res(res):
     print(res.status_code)
     print(f"\n {res.text}")
 
+def get_info():
+    res = requests.get(url + "/user/info", cookies=cookie)
+    print_res(res)
+
 def create_admin():
     res = requests.post(url + "/admin/create_admin", json={"Name": user, "Password": password})
     print_res(res)
@@ -51,10 +55,7 @@ def get_clan_invitation():
 
 def invite_clan():
     import json
-    res = requests.post(url + "/admin/invite_clan", cookies=cookie, json={"Clan": "invited_clan"})
-    body = json.loads(res.text)
-    print(body)
-    res = requests.post(url + "/register", cookies={"token": body["token"]}, json={"Name": "clanadmin", "Password": "123456789123456789"})
+    res = requests.get(url + "/admin/invite_clan", cookies=cookie)
     print_res(res)
 
 def check_name(name):

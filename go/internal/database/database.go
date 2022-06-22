@@ -311,7 +311,7 @@ func (m *DataBaseManager) CreateStockpile(location string, code string, clan str
 	}
 
 	go func(location string, clan string, user string) {
-		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?)")
+		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Panic(err)
 		}
