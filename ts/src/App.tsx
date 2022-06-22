@@ -1,4 +1,3 @@
-import * as React from "react";
 import { BrowserRouter, Routes, Route, Link as RLink } from "react-router-dom";
 
 import {
@@ -19,6 +18,7 @@ import HeaderPanel from "./navigationHeader/navigationHeader";
 import RegisterPage from "./registerPage/registerPage";
 import ItemsPage from "./itemTable/itemTable";
 import { AccountInfoContext, AccountInfo } from "./login/accountInfoStore";
+import RootPage from "./rootPage/rootPage";
 
 export const App = () => (
   <BrowserRouter>
@@ -32,7 +32,7 @@ export const App = () => (
             '25%', // 48em-62em
           ]} />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/" element={<Text>Root page</Text>} />
+          <Route path="/" element={<RootPage />} />
           <Route path="/invite" element={<RegisterPage />} />
           <Route path="/items" element={<ItemsPage />} />
         </Routes>

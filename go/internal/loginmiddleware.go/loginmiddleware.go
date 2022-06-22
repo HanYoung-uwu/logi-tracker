@@ -364,7 +364,7 @@ func LogoutHandler(c *gin.Context) {
 		go func(token string) {
 			t := GetAccountManager()
 			t.tokensToDelete.lock.Lock()
-			defer t.tokensToWrite.lock.Unlock()
+			defer t.tokensToDelete.lock.Unlock()
 			t.tokensToDelete.tokens = append(t.tokensToDelete.tokens, token)
 			t.tokens.Delete(token)
 		}(token)

@@ -40,6 +40,10 @@ const InviteUserButton = observer((props: any) => {
         }
     }, [isOpen]);
 
+    if (accountInfo.permission != 0 && accountInfo.permission != 1) {
+        return <></>;
+    }
+
     return (<>
         <Button onClick={onOpen}>
             <HStack>

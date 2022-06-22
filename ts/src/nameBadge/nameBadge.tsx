@@ -48,10 +48,12 @@ const NameBadge = observer((props: any) => {
                 accountInfo.setAccountName(info.Name);
                 accountInfo.setClan(info.Clan);
                 accountInfo.setPermission(info.Permission);
+            } else {
+                accountInfo.setPermission(-2);
             }
         };
         init();
-    }, [accountInfo]);
+    }, [accountInfo.name]);
     return (
         <Popover isOpen={isOpen}>
             <PopoverTrigger>

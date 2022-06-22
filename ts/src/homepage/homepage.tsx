@@ -10,7 +10,10 @@ import { AccountInfoContext } from '../login/accountInfoStore';
 const HomePage = observer((props: any) => {
     const accountInfo = useContext(AccountInfoContext);
 
-    if (accountInfo.permission != -1 && accountInfo.permission != 0 && accountInfo.permission != 1 && accountInfo.permission != 2) {
+    if (accountInfo.permission != -1
+        && accountInfo.permission != 0
+        && accountInfo.permission != 1
+        && accountInfo.permission != 2 && accountInfo.name == '') {
         return <Navigate to="/login" replace={true} />;
     }
 
