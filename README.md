@@ -19,7 +19,7 @@ I aim to support:
 - [ ] catalog tab or each section, like guns, shells, vehicles
 - [ ] account page for setting password, delete account etc.
 - [ ] clan admin manage page for kicking off memebers and add promote memebers to admin
-- [ ] don't use cookie for account creating
+- [x] don't use cookie for account creating
 - [ ] cache item icons in local storage
 - [ ] stockpile item search
 - [ ] ability for clan admin to publish item requests

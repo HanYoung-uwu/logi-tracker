@@ -18,11 +18,10 @@ func main() {
 	basePath.POST("/register", loginmiddleware.CreateUserFromInvitationLinkHandler)
 	basePath.POST("/check_name", handlers.CheckAccountNameExist)
 	basePath.POST("/admin/create_admin", loginmiddleware.CreateAdminOnFirstRequestHandler)
-
-	userInfo := basePath.Group("/user", loginmiddleware.UserInfoAuthHandler)
-	userInfo.GET("/info", handlers.GetBasicAccountInfo)
+	basePath.GET("/invite_info", loginmiddleware.InviteAccountInfoHandler)
 
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
+	authorized.GET("/info", handlers.GetBasicAccountInfo)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
 	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)

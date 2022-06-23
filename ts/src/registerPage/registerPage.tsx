@@ -1,18 +1,19 @@
 import { Flex, HStack, VStack, Button, Spacer, Center, Input, Text, InputGroup, InputRightElement, Alert, AlertIcon } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react';
-import { checkNameExist, fetchAccountInfo, AccountInfo } from '../api/apis';
+import React, { useEffect, useState, useContext } from 'react';
+import { checkNameExist, fetchInviteAccountInfo, InviteAccountInfo } from '../api/apis';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL_ROOT } from '../config/config';
+import { AccountInfoContext } from '../login/accountInfoStore';
 
 const RegisterPage = (props: any) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [accountInfo, setAccountInfo] = useState<AccountInfo>({
-        Name: "",
+    const [accountInfo, setAccountInfo] = useState<InviteAccountInfo>({
         Clan: "",
         Permission: -1
     });
+    const globalAccountInfo = useContext(AccountInfoContext);
     const [show, setShow] = useState(false);
     const [params, setParams] = useSearchParams();
     const [nameValid, setNameValid] = useState(false);
@@ -22,8 +23,9 @@ const RegisterPage = (props: any) => {
 
     useEffect(() => {
         let token = params.get("link");
-        document.cookie = `token=${token}`;
-        fetchAccountInfo().then(info => { if (info) setAccountInfo(info); });
+        if (token) {
+            fetchInviteAccountInfo(token).then(info => { if (info) setAccountInfo(info); });
+        }
     }, []);
 
     const handleClick = () => {
@@ -43,10 +45,12 @@ const RegisterPage = (props: any) => {
                 body: JSON.stringify({
                     Name: username,
                     Password: password,
-                    Clan: accountInfo.Clan
+                    Clan: accountInfo.Clan,
+                    Token: params.get("link")
                 })
             });
             if (Math.floor(res.status / 100) == 2) {
+                globalAccountInfo.setAccountName(username);
                 navigate("/home", { replace: true });
             }
         };

@@ -15,6 +15,11 @@ interface AccountInfo {
                                        // 3 clan invite, 4 clan admin invite, -1 undefined
 }
 
+interface InviteAccountInfo {
+    Clan: string
+    Permission: -1 | 3 | 4
+}
+
 interface Location {
     location: string
     time: Date
@@ -42,6 +47,16 @@ const fetchAllItems: () => Promise<Array<ItemRecord> | void> = async () => {
 
 const fetchAccountInfo: () => Promise<AccountInfo | null> = async () => {
     let url = API_URL_ROOT + "/user/info"
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) != 2) {
+        return null;
+    } else {
+        return await res.json();
+    }
+};
+
+const fetchInviteAccountInfo: (token: string) => Promise<InviteAccountInfo | null> = async (token) => {
+    let url = API_URL_ROOT + `/invite_info?token=${token}`;
     let res = await fetch(url);
     if (Math.floor(res.status / 100) != 2) {
         return null;
@@ -291,6 +306,7 @@ const logout = () => {
 export {
     fetchAllItems,
     fetchAccountInfo,
+    fetchInviteAccountInfo,
     fetchClanInviteLink,
     addItem, fetchLocations,
     deleteItem,
@@ -304,4 +320,4 @@ export {
     logout,
     fetchClanAdminInviteLink
 };
-export type { Location, HistoryRecord, AccountInfo };
+export type { Location, HistoryRecord, AccountInfo, InviteAccountInfo };
