@@ -20,7 +20,7 @@ I aim to support:
 - [ ] account page for setting password, delete account etc.
 - [ ] clan admin manage page for kicking off memebers and add promote memebers to admin
 - [x] don't use cookie for account creating
-- [ ] cache item icons in local storage
+- [x] cache item icons in local storage
 - [ ] stockpile item search
 - [ ] ability for clan admin to publish item requests
 - [ ] use discord api to notify expire stockpile
@@ -41,6 +41,7 @@ Install yarn
 
 ```bash
 cd ts
+yarn
 yarn start
 ```
 

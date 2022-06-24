@@ -471,7 +471,7 @@ func (m *DataBaseManager) DeleteStockpile(location string, clan string, user str
 		log.Panic(err)
 	}
 	go func(location string, clan string, user string) {
-		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?)")
+		stmt, err := m.db.Prepare("insert into history(action, location, time, clan, user) values(?, ?, ?, ?, ?)")
 		if err != nil {
 			log.Panic(err)
 		}
