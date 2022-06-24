@@ -104,7 +104,7 @@ const ItemTableRow = (props: { record: { location: string, size: number, item: s
 
 const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
     const [rows, setRows] = useState(Array<JSX.Element>());
-    
+
     const fetchAndConstructTable = async () => {
         let items = await fetchAllItems();
         if (items) {
@@ -140,7 +140,7 @@ const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
 
 const ItemsList = (props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [locations, setLocations] = useState<Array<Location>>();
+    const [locations, setLocations] = useState<Array<Location>>([]);
     const [selectedLocation, setSelectedLocation] = useState<string>('');
     const [quantity, setQuantity] = useState<number>(0);
 
@@ -148,12 +148,14 @@ const ItemsList = (props: any) => {
 
     const handleAddItem = (name: string) => {
         let location = selectedLocation;
-        if (location == '' && locations) {
+        if (location == '' && locations.length !== 0) {
             location = locations[0].location;
         }
-        addItem(name, quantity, location);
-        onClose();
-        refreshTable();
+        if (location.length !== 0 && quantity !== 0) {
+            addItem(name, quantity, location);
+            onClose();
+            refreshTable();
+        }
     };
     useEffect(() => {
         const initLocation = async () => {

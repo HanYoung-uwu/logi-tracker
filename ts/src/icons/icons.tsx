@@ -3,6 +3,7 @@ import Icon250mm from "./ammo/250mm.png"
 import Icon30mm from "./ammo/30mm.png"
 import Icon68mm from "./ammo/68mm.png"
 import Icon792mmv1 from "./ammo/7.92mmv1.png"
+import Icon300mm from "./ammo/300mm.png"
 import Icon9mm_SMG from "./ammo/9mm_SMG.png"
 import Icon9mm from "./ammo/9mm.png"
 import IconATRPG_Indirect_shell from "./ammo/ATRPG_Indirect_shell.png"
@@ -35,6 +36,7 @@ import IconSandbags_Pallet_Structure from "./shippable/Sandbags_Pallet_Structure
 import IconShipping_Container_Structure from "./shippable/Shipping_Container_Structure.png"
 import IconSmall_Shipping_Container_Structure from "./shippable/Small_Shipping_Container_Structure.png"
 import IconArmourUniformWIcon from "./uniform/ArmourUniformWIcon.png"
+import IconArmourUniformCIcon from "./uniform/ArmourUniformCIcon.png"
 import IconEngineerUniformCIcon from "./uniform/EngineerUniformCIcon.png"
 import IconEngineerUniformWIcon from "./uniform/EngineerUniformWIcon.png"
 import IconGrenadeUniformCIcon from "./uniform/GrenadeUniformCIcon.png"
@@ -47,17 +49,17 @@ import IconScoutUniformCIcon from "./uniform/ScoutUniformCIcon.png"
 import IconScoutUniformWIcon from "./uniform/ScoutUniformWIcon.png"
 import IconSnowUniformCIcon from "./uniform/SnowUniformCIcon.png"
 import IconSnowUniformWIcon from "./uniform/SnowUniformWIcon.png"
-import IconSoldierUniformCIcon from "./uniform/SoldierUniformCIcon.png"
-import IconSoldierUniformWIcon from "./uniform/SoldierUniformWIcon.png"
 import IconTankUniformCIcon from "./uniform/TankUniformCIcon.png"
 import IconTankUniformWIcon from "./uniform/TankUniformWIcon.png"
 import IconGrenadeAdapterIcon from "./tool/GrenadeAdapterIcon.png"
-import IconHammer from "./tool/Hammer.png"
 import IconRadio from "./tool/Radio.png"
 import IconShovelIcon from "./tool/ShovelIcon.png"
 import IconTripodItemIcon from "./tool/TripodItemIcon.png"
 import IconWrench from "./tool/Wrench.png"
 import IconGas_Mask from "./tool/Gas_Mask.png"
+import IconGas_Mask_Filter from "./tool/Gas_Mask_Filter_Icon.png"
+import IconBinoculars from "./tool/Binoculars.png"
+import IconBayonet from "./tool/Bayonet.png"
 import IconListening_Kit from "./tool/Listening_Kit.png"
 import IconRadio_backpacks from "./tool/Radio_backpacks.png"
 import IconSledge_Hammer from "./tool/Sledge_Hammer.png"
@@ -68,39 +70,18 @@ import IconDiesel from "./resource/Diesel.png"
 import IconHeavyExplosiveMaterialIcon from "./resource/HeavyExplosiveMaterialIcon.png"
 import IconMetalBeamMaterial from "./resource/MetalBeamMaterial.png"
 import IconPetrol from "./resource/Petrol.png"
-import IconRelicMaterials from "./resource/RelicMaterials.png"
-import IconSalvageIcon from "./resource/SalvageIcon.png"
 import IconSandbagsMaterial from "./resource/SandbagsMaterial.png"
-import IconWreckage from "./resource/Wreckage.png"
 import IconSulfur from "./resource/Sulfur.png"
 import IconBasic_Materials from "./resource/Basic_Materials.png"
 import IconConcrete_Materials from "./resource/Concrete_Materials.png"
 import IconCopper_Alloy from "./resource/Copper_Alloy.png"
 import IconExplosive_Materials from "./resource/Explosive_Materials.png"
-import IconPrototype_Kit from "./resource/Prototype_Kit.png"
 import IconRefined_Materials from "./resource/Refined_Materials.png"
-import IconAmbulanceIcon from "./vehicle/AmbulanceIcon.png"
-import IconArmoredCar from "./vehicle/ArmoredCar.png"
 import IconBarge from "./vehicle/Barge.png"
-import IconBattleTankIcon from "./vehicle/BattleTankIcon.png"
-import IconBicycleVehicleIcon from "./vehicle/BicycleVehicleIcon.png"
-import IconCargoship from "./vehicle/Cargoship.png"
-import IconCenturionVehicleIcon from "./vehicle/CenturionVehicleIcon.png"
-import IconConstructionYardIcon from "./vehicle/ConstructionYardIcon.png"
 import IconCraneVehicleIcon from "./vehicle/CraneVehicleIcon.png"
-import IconFieldMG from "./vehicle/FieldMG.png"
 import IconFlatbedTruckVehicleIcon from "./vehicle/FlatbedTruckVehicleIcon.png"
 import IconFreighterVehicleIcon from "./vehicle/FreighterVehicleIcon.png"
-import IconGunShip from "./vehicle/GunShip.png"
-import IconHalf_Truck from "./vehicle/Half-Truck.png"
 import IconHarvester from "./vehicle/Harvester.png"
-import IconHICVehicleIcon from "./vehicle/HICVehicleIcon.png"
-import IconLandingAPC from "./vehicle/LandingAPC.png"
-import IconMotorboatIcon from "./vehicle/MotorboatIcon.png"
-import IconMotorcycles from "./vehicle/Motorcycles.png"
-import IconOilTankerIcon from "./vehicle/OilTankerIcon.png"
-import IconScoutVehicleIcon from "./vehicle/ScoutVehicleIcon.png"
-import IconTankette from "./vehicle/Tankette.png"
 import Icon68_45_Smelter_Heavy_Field_Gun_Vehicle_Icon from "./vehicle/68-45_Smelter_Heavy_Field_Gun_Vehicle_Icon.png"
 import Icon74b_1_Ronan_Gunship_Vehicle_Icon from "./vehicle/74b-1_Ronan_Gunship_Vehicle_Icon.png"
 import Icon74c_2_Ronan_Meteora_Gunship_Vehicle_Icon from "./vehicle/74c-2_Ronan_Meteora_Gunship_Vehicle_Icon.png"
@@ -111,8 +92,6 @@ import Icon86K_c_Ranseur_Vehicle_Icon from "./vehicle/86K-c_Ranseur_Vehicle_Icon
 import IconAA_2_Battering_Ram_Vehicle_Icon from "./vehicle/AA-2_Battering_Ram_Vehicle_Icon.png"
 import IconAB_11_Doru_Vehicle_Icon from "./vehicle/AB-11_Doru_Vehicle_Icon.png"
 import IconAB_8_Acheron_Vehicle_Icon from "./vehicle/AB-8_Acheron_Vehicle_Icon.png"
-import IconArmored_Fighting_Tractor_Icon from "./vehicle/Armored_Fighting_Tractor_Icon.png"
-import IconAssault_Tanks_Vehicle_Icon from "./vehicle/Assault_Tanks_Vehicle_Icon.png"
 import IconBalfour_Falconer_250mm_Vehicle_Icon from "./vehicle/Balfour_Falconer_250mm_Vehicle_Icon.png"
 import IconBalfour_Rampart_40mm_Vehicle_Icon from "./vehicle/Balfour_Rampart_40mm_Vehicle_Icon.png"
 import IconBalfour_Wolfhound_40mm_Vehicle_Icon from "./vehicle/Balfour_Wolfhound_40mm_Vehicle_Icon.png"
@@ -131,10 +110,6 @@ import IconDunne_Leatherback_2a_Vehicle_Icon from "./vehicle/Dunne_Leatherback_2
 import IconDunne_Loadlugger_3c_Vehicle_Icon from "./vehicle/Dunne_Loadlugger_3c_Vehicle_Icon.png"
 import IconDunne_Responder_3e_Vehicle_Icon from "./vehicle/Dunne_Responder_3e_Vehicle_Icon.png"
 import IconDunne_Transport_Vehicle_Icon from "./vehicle/Dunne_Transport_Vehicle_Icon.png"
-import IconField_Artillery from "./vehicle/Field_Artillery.png"
-import IconFlood_Ascension_Mk_V_Vehicle_Icon from "./vehicle/Flood_Ascension_Mk._V_Vehicle_Icon.png"
-import IconFlood_Juggernaut_Mk_VII_Vehicle_Icon from "./vehicle/Flood_Juggernaut_Mk._VII_Vehicle_Icon.png"
-import IconFlood_Mk_1_Vehicle_Icon from "./vehicle/Flood_Mk-1_Vehicle_Icon.png"
 import IconG40_Sagittarii_Vehicle_Icon from "./vehicle/G40_Sagittarii_Vehicle_Icon.png"
 import IconGallagher_Highwayman_Mk_III_Vehicle_Icon from "./vehicle/Gallagher_Highwayman_Mk._III_Vehicle_Icon.png"
 import IconGallagher_Outlaw_Mk_II_Vehicle_Icon from "./vehicle/Gallagher_Outlaw_Mk._II_Vehicle_Icon.png"
@@ -143,19 +118,14 @@ import IconH_8_Kranesca_Vehicle_Icon from "./vehicle/H-8_Kranesca_Vehicle_Icon.p
 import IconH5_Hatchet_Vehicle_Icon from "./vehicle/H5_Hatchet_Vehicle_Icon.png"
 import IconHC_2_Scorpion_Vehicle_Icon from "./vehicle/HC-2_Scorpion_Vehicle_Icon.png"
 import IconHC_7_Ballista_Vehicle_Icon from "./vehicle/HC-7_Ballista_Vehicle_Icon.png"
-import IconHerne_QMW_1a_Scourge_Hunter_Vehicle_Icon from "./vehicle/Herne_QMW_1a_Scourge_Hunter_Vehicle_Icon.png"
 import IconHH_a_Javelin_Vehicle_Icon from "./vehicle/HH-a_Javelin_Vehicle_Icon.png"
 import IconHH_b_Hoplite_Vehicle_Icon from "./vehicle/HH-b_Hoplite_Vehicle_Icon.png"
 import IconHH_d_Peltast_Vehicle_Icon from "./vehicle/HH-d_Peltast_Vehicle_Icon.png"
 import IconKing_Gallant_MK_II_Icon from "./vehicle/King_Gallant_MK-II_Icon.png"
 import IconKing_Spire_MK_I_Icon from "./vehicle/King_Spire_MK-I_Icon.png"
 import IconKivela_Power_Wheel_80_1_Vehicle_Icon from "./vehicle/Kivela_Power_Wheel_80-1_Vehicle_Icon.png"
-import IconLance_36_Vehicle_Icon from "./vehicle/Lance-36_Vehicle_Icon.png"
-import IconLance_40_Hallberd_Vehicle_Icon from "./vehicle/Lance-40_Hallberd_Vehicle_Icon.png"
-import IconLight_Tank_Icon from "./vehicle/Light_Tank_Icon.png"
 import IconLogan_Cannon_150mm_Vehicle_Icon from "./vehicle/Logan_Cannon_150mm_Vehicle_Icon.png"
 import IconMotorboat_Icon from "./vehicle/Motorboat_Icon.png"
-import IconMulloy_Flying_Squid from "./vehicle/Mulloy_Flying_Squid.png"
 import IconMulloy_LPC_Vehicle_Icon from "./vehicle/Mulloy_LPC_Vehicle_Icon.png"
 import IconNiska_Mk_1_Gun_Motor_Carriage_Vehicle_Icon from "./vehicle/Niska_Mk._1_Gun_Motor_Carriage_Vehicle_Icon.png"
 import IconNiska_Mk_2_Blinder_Vehicle_Icon from "./vehicle/Niska_Mk._2_Blinder_Vehicle_Icon.png"
@@ -164,30 +134,21 @@ import IconOBrien_v101_Freeman_Vehicle_Icon from "./vehicle/OBrien_v.101_Freeman
 import IconOBrien_v121_Highlander_Vehicle_Icon from "./vehicle/OBrien_v.121_Highlander_Vehicle_Icon.png"
 import IconOBrien_v110_Vehicle_Icon from "./vehicle/OBrien_v110_Vehicle_Icon.png"
 import IconOBrien_v113_Gravekeeper_Vehicle_Icon from "./vehicle/OBrien_v.113_Gravekeeper_Vehicle_Icon.png"
-import IconPL_1_Phalanx_Vehicle_Icon from "./vehicle/PL-1_Phalanx_Vehicle_Icon.png"
 import IconR_1_Hauler_Vehicle_Icon from "./vehicle/R-1_Hauler_Vehicle_Icon.png"
 import IconR_12___Salus_Ambulance_Vehicle_Icon from "./vehicle/R-12_-_Salus_Ambulance_Vehicle_Icon.png"
 import IconR_15___Chariot_Vehicle_Icon from "./vehicle/R-15_-_Chariot_Vehicle_Icon.png"
 import IconR_5_Atlas_Hauler_Vehicle_Icon from "./vehicle/R-5_Atlas_Hauler_Vehicle_Icon.png"
 import IconR_5b_Sisyphus_Hauler_Vehicle_Icon from "./vehicle/R-5b_Sisyphus_Hauler_Vehicle_Icon.png"
 import IconR_9_Speartip_Escort_Vehicle_Icon from "./vehicle/R-9_Speartip_Escort_Vehicle_Icon.png"
-import IconRelic_Bus_Icon from "./vehicle/Relic_Bus_Icon.png"
-import IconRepurposed_Truck_Icon from "./vehicle/Repurposed_Truck_Icon.png"
-import IconResource_Truck_Vehicle_Icon from "./vehicle/Resource_Truck_Vehicle_Icon.png"
 import IconRR_3_Stolon_Tanker_Vehicle_Icon from "./vehicle/RR-3_Stolon_Tanker_Vehicle_Icon.png"
-import IconScout_Tanks from "./vehicle/Scout_Tanks.png"
 import IconSilverhand___Mk_IV_Vehicle_Icon from "./vehicle/Silverhand_-_Mk._IV_Vehicle_Icon.png"
 import IconSilverhand_Chieftan___Mk_VI_Vehicle_Icon from "./vehicle/Silverhand_Chieftan_-_Mk._VI_Vehicle_Icon.png"
-import IconStaff_Car_Icon from "./vehicle/Staff_Car_Icon.png"
-import IconStorm_Tank_Icon from "./vehicle/Storm_Tank_Icon.png"
 import IconSwallowtail_988_145_2_Vehicle_Icon from "./vehicle/Swallowtail_988-145-2_Vehicle_Icon.png"
 import IconT12_Actaeon_Tankette_Vehicle_Icon from "./vehicle/T12_Actaeon_Tankette_Vehicle_Icon.png"
 import IconT20_Ixion_Tankette_Vehicle_Icon from "./vehicle/T20_Ixion_Tankette_Vehicle_Icon.png"
 import IconT3_Xiphos_Vehicle_Icon from "./vehicle/T3_Xiphos_Vehicle_Icon.png"
 import IconT5_Percutio_Vehicle_Icon from "./vehicle/T5_Percutio_Vehicle_Icon.png"
 import IconT8_Gemini_Vehicle_Icon from "./vehicle/T8_Gemini_Vehicle_Icon.png"
-import IconTransport_Bus_Icon from "./vehicle/Transport_Bus_Icon.png"
-import IconTransport_Truck from "./vehicle/Transport_Truck.png"
 import IconType_C___Charon_Vehicle_Icon from "./vehicle/Type_C_-_Charon_Vehicle_Icon.png"
 import IconUV_05_Collector_Vehicle_Icon from "./vehicle/UV-05_Collector_Vehicle_Icon.png"
 import IconUV_05a_Argonaut_Vehicle_Icon from "./vehicle/UV-05a_Argonaut_Vehicle_Icon.png"
@@ -195,17 +156,12 @@ import IconUV_24_Icarus_Vehicle_Icon from "./vehicle/UV-24_Icarus_Vehicle_Icon.p
 import IconUV_5c_Odyssey_Vehicle_Icon from "./vehicle/UV-5c_Odyssey_Vehicle_Icon.png"
 import IconBonesaw from "./weapon/Bonesaw.png"
 import IconCarabine from "./weapon/Carabine.png"
-import IconFists from "./weapon/Fists.png"
 import IconGrenade from "./weapon/Grenade.png"
-import IconHMG from "./weapon/HMG.png"
 import IconIgnifist from "./weapon/Ignifist.png"
 import IconCatara_mo_II from "./weapon/Catara_mo_II.png"
 import IconKRN886_127_Gast_Machine_Gun from "./weapon/KRN886-127_Gast_Machine_Gun.png"
 import IconMortar_0 from "./weapon/Mortar-0.png"
-import IconPistol_0 from "./weapon/Pistol-0.png"
-import IconRPG from "./weapon/R.P.G..png"
 import IconRevolver from "./weapon/Revolver.png"
-import IconRifle from "./weapon/Rifle.png"
 import IconRocketBoosterIcon from "./weapon/RocketBoosterIcon.png"
 import IconRocketWarheadIcon from "./weapon/RocketWarheadIcon.png"
 import IconShotgun from "./weapon/Shotgun.png"
@@ -224,14 +180,13 @@ import IconCutler_Launcher from "./weapon/Cutler_Launcher.png"
 import IconDaucus_isg from "./weapon/Daucus_isg.png"
 import IconDusk_ceIII from "./weapon/Dusk_ce.III.png"
 import IconFuscina_Rifle from "./weapon/Fuscina_Rifle.png"
-import IconGast_MG from "./weapon/Gast_MG.png"
 import IconGreen_Ash from "./weapon/Green_Ash.png"
 import IconHE_Grenade from "./weapon/HE_Grenade.png"
 import IconHydras_Whisper from "./weapon/Hydras_Whisper.png"
 import IconKLG901_2_Lunaire_F from "./weapon/KLG901-2_Lunaire_F.png"
 import IconKRR2_790_Omen from "./weapon/KRR2-790_Omen.png"
 import IconLamentum_mmIV from "./weapon/Lamentum_mm.IV.png"
-import IconLand_Mine from "./weapon/Land_Mine.png"
+import IconLand_Mine from "./tool/Land_Mine.png"
 import IconLionclaw_mcVIII from "./weapon/Lionclaw_mc.VIII.png"
 import IconMalone_MG from "./weapon/Malone_MG.png"
 import IconMalone_Ratcatcher_MK1 from "./weapon/Malone_Ratcatcher_MK.1.png"
@@ -247,255 +202,221 @@ import IconTyphon_raXII from "./weapon/Typhon_ra.XII.png"
 import IconVenom_cII from "./weapon/Venom_c.II.png"
 import IconVolta_RepeaterIcon from "./weapon/Volta_RepeaterIcon.png"
 
-const IconList = [
-    { name: "150mm", icon: Icon150mm },
-    { name: "250mm", icon: Icon250mm },
-    { name: "30mm", icon: Icon30mm },
-    { name: "68mm", icon: Icon68mm },
-    { name: "7.92mmv1", icon: Icon792mmv1 },
-    { name: "9mm SMG", icon: Icon9mm_SMG },
-    { name: "9mm", icon: Icon9mm },
-    { name: "ATRPG Indirect shell", icon: IconATRPG_Indirect_shell },
-    { name: "ATRPG Shell", icon: IconATRPG_Shell },
-    { name: "Buckshot", icon: IconBuckshot },
-    { name: "Mortar Shell", icon: IconMortar_Shell },
-    { name: "MortarAmmoIconFlare", icon: IconMortarAmmoIconFlare },
-    { name: "RPG shell ", icon: IconRPG_shell_ },
-    { name: "Tremola Grenade GPb-1", icon: IconTremola_Grenade_GPb_1_Icon },
-    { name: "120mm", icon: Icon120mm },
-    { name: "40mm", icon: Icon40mm },
-    { name: "20mm", icon: Icon20mm },
-    { name: "7.62mm", icon: Icon762mm },
-    { name: "MortarAmmoIconShrapnel", icon: IconMortarAmmoIconShrapnel },
-    { name: "Shirts", icon: IconShirts },
-    { name: "Bandages", icon: IconBandages },
-    { name: "BloodPlasmaItem", icon: IconBloodPlasmaItemIcon },
-    { name: "First Aid kit", icon: IconFirst_Aid_kit },
-    { name: "Trauma Kit", icon: IconTrauma_Kit },
-    { name: "BSupp", icon: IconBSupp },
-    { name: "GSupp", icon: IconGSupp },
-    { name: "CementMixer", icon: IconCementMixerIcon },
-    { name: "ResourceContainer", icon: IconResourceContainerIcon },
-    { name: "Barbed Wire Pallet Structure", icon: IconBarbed_Wire_Pallet_Structure },
-    { name: "Huber Exalt 150mm Structure", icon: IconHuber_Exalt_150mm_Structure },
-    { name: "Huber Lariat 120mm Structure", icon: IconHuber_Lariat_120mm_Structure },
-    { name: "Metal Beam Pallet Structure", icon: IconMetal_Beam_Pallet_Structure },
-    { name: "Production Parts Structure", icon: IconProduction_Parts_Structure },
-    { name: "Sandbags Pallet Structure", icon: IconSandbags_Pallet_Structure },
-    { name: "Shipping Container Structure", icon: IconShipping_Container_Structure },
-    { name: "Small Shipping Container Structure", icon: IconSmall_Shipping_Container_Structure },
-    { name: "ArmourUniformW", icon: IconArmourUniformWIcon },
-    { name: "EngineerUniformC", icon: IconEngineerUniformCIcon },
-    { name: "EngineerUniformW", icon: IconEngineerUniformWIcon },
-    { name: "GrenadeUniformC", icon: IconGrenadeUniformCIcon },
-    { name: "MedicUniformC", icon: IconMedicUniformCIcon },
-    { name: "MedicUniformW", icon: IconMedicUniformWIcon },
-    { name: "OfficerUniformC", icon: IconOfficerUniformCIcon },
-    { name: "OfficerUniformW", icon: IconOfficerUniformWIcon },
-    { name: "RainUniformC", icon: IconRainUniformCIcon },
-    { name: "ScoutUniformC", icon: IconScoutUniformCIcon },
-    { name: "ScoutUniformW", icon: IconScoutUniformWIcon },
-    { name: "SnowUniformC", icon: IconSnowUniformCIcon },
-    { name: "SnowUniformW", icon: IconSnowUniformWIcon },
-    { name: "SoldierUniformC", icon: IconSoldierUniformCIcon },
-    { name: "SoldierUniformW", icon: IconSoldierUniformWIcon },
-    { name: "TankUniformC", icon: IconTankUniformCIcon },
-    { name: "TankUniformW", icon: IconTankUniformWIcon },
-    { name: "GrenadeAdapter", icon: IconGrenadeAdapterIcon },
-    { name: "Hammer", icon: IconHammer },
-    { name: "Radio", icon: IconRadio },
-    { name: "Shovel", icon: IconShovelIcon },
-    { name: "TripodItem", icon: IconTripodItemIcon },
-    { name: "Wrench", icon: IconWrench },
-    { name: "Gas Mask", icon: IconGas_Mask },
-    { name: "Listening Kit", icon: IconListening_Kit },
-    { name: "Radio backpacks", icon: IconRadio_backpacks },
-    { name: "Sledge Hammer", icon: IconSledge_Hammer },
-    { name: "Components", icon: IconComponents },
-    { name: "Copper", icon: IconCopper },
-    { name: "CrudeOil", icon: IconCrudeOilIcon },
-    { name: "Diesel", icon: IconDiesel },
-    { name: "HeavyExplosiveMaterial", icon: IconHeavyExplosiveMaterialIcon },
-    { name: "MetalBeamMaterial", icon: IconMetalBeamMaterial },
-    { name: "Petrol", icon: IconPetrol },
-    { name: "RelicMaterials", icon: IconRelicMaterials },
-    { name: "SalvageIcon", icon: IconSalvageIcon },
-    { name: "SandbagsMaterial", icon: IconSandbagsMaterial },
-    { name: "Wreckage", icon: IconWreckage },
-    { name: "Sulfur", icon: IconSulfur },
-    { name: "Basic Materials", icon: IconBasic_Materials },
-    { name: "Concrete Materials", icon: IconConcrete_Materials },
-    { name: "Copper Alloy", icon: IconCopper_Alloy },
-    { name: "Explosive Materials", icon: IconExplosive_Materials },
-    { name: "Prototype Kit", icon: IconPrototype_Kit },
-    { name: "Refined Materials", icon: IconRefined_Materials },
-    { name: "Ambulance", icon: IconAmbulanceIcon },
-    { name: "ArmoredCar", icon: IconArmoredCar },
-    { name: "Barge", icon: IconBarge },
-    { name: "BattleTank", icon: IconBattleTankIcon },
-    { name: "BicycleVehicle", icon: IconBicycleVehicleIcon },
-    { name: "Cargoship", icon: IconCargoship },
-    { name: "CenturionVehicle", icon: IconCenturionVehicleIcon },
-    { name: "ConstructionYard", icon: IconConstructionYardIcon },
-    { name: "CraneVehicle", icon: IconCraneVehicleIcon },
-    { name: "FieldMG", icon: IconFieldMG },
-    { name: "FlatbedTruckVehicle", icon: IconFlatbedTruckVehicleIcon },
-    { name: "FreighterVehicle", icon: IconFreighterVehicleIcon },
-    { name: "GunShip", icon: IconGunShip },
-    { name: "Half-Truck", icon: IconHalf_Truck },
-    { name: "Harvester", icon: IconHarvester },
-    { name: "HICVehicle", icon: IconHICVehicleIcon },
-    { name: "LandingAPC", icon: IconLandingAPC },
-    { name: "Motorboat", icon: IconMotorboatIcon },
-    { name: "Motorcycles", icon: IconMotorcycles },
-    { name: "OilTanker", icon: IconOilTankerIcon },
-    { name: "ScoutVehicle", icon: IconScoutVehicleIcon },
-    { name: "Tankette", icon: IconTankette },
-    { name: "68-45 Smelter Heavy Field Gun Vehicle", icon: Icon68_45_Smelter_Heavy_Field_Gun_Vehicle_Icon },
-    { name: "74b-1 Ronan Gunship Vehicle", icon: Icon74b_1_Ronan_Gunship_Vehicle_Icon },
-    { name: "74c-2 Ronan Meteora Gunship Vehicle", icon: Icon74c_2_Ronan_Meteora_Gunship_Vehicle_Icon },
-    { name: "85K-a Spatha Vehicle", icon: Icon85K_a_Spatha_Vehicle_Icon },
-    { name: "85K-b Falchion Vehicle", icon: Icon85K_b_Falchion_Vehicle_Icon },
-    { name: "86K-a Bardiche Vehicle", icon: Icon86K_a_Bardiche_Vehicle_Icon },
-    { name: "86K-c Ranseur Vehicle", icon: Icon86K_c_Ranseur_Vehicle_Icon },
-    { name: "AA-2 Battering Ram Vehicle", icon: IconAA_2_Battering_Ram_Vehicle_Icon },
-    { name: "AB-11 Doru Vehicle", icon: IconAB_11_Doru_Vehicle_Icon },
-    { name: "AB-8 Acheron Vehicle", icon: IconAB_8_Acheron_Vehicle_Icon },
-    { name: "Armored Fighting Tractor", icon: IconArmored_Fighting_Tractor_Icon },
-    { name: "Assault Tanks Vehicle", icon: IconAssault_Tanks_Vehicle_Icon },
-    { name: "Balfour Falconer 250mm Vehicle", icon: IconBalfour_Falconer_250mm_Vehicle_Icon },
-    { name: "Balfour Rampart 40mm Vehicle", icon: IconBalfour_Rampart_40mm_Vehicle_Icon },
-    { name: "Balfour Wolfhound 40mm Vehicle", icon: IconBalfour_Wolfhound_40mm_Vehicle_Icon },
-    { name: "Collins Cannon 68mm Vehicle", icon: IconCollins_Cannon_68mm_Vehicle_Icon },
-    { name: "Construction Vehicle", icon: IconConstruction_Vehicle },
-    { name: "Devitt Ironhide Mk. IV Vehicle", icon: IconDevitt_Ironhide_Mk_IV_Vehicle_Icon },
-    { name: "Devitt Mark III Vehicle", icon: IconDevitt_Mark_III_Vehicle_Icon },
-    { name: "Devitte-Caine Mk-IV MMR", icon: IconDevitte_Caine_Mk_IV_MMR_Icon },
-    { name: "Drummond 100a Vehicle", icon: IconDrummond_100a_Vehicle_Icon },
-    { name: "Drummond Loscann 55c Vehicle", icon: IconDrummond_Loscann_55c_Vehicle_Icon },
-    { name: "Drummond Spitfire 100d Vehicle", icon: IconDrummond_Spitfire_100d_Vehicle_Icon },
-    { name: "Dunne Caravaner 2f Vehicle", icon: IconDunne_Caravaner_2f_Vehicle_Icon },
-    { name: "Dunne Fuelrunner 2d Vehicle", icon: IconDunne_Fuelrunner_2d_Vehicle_Icon },
-    { name: "Dunne Landrunner 12c Vehicle", icon: IconDunne_Landrunner_12c_Vehicle_Icon },
-    { name: "Dunne Leatherback 2a Vehicle", icon: IconDunne_Leatherback_2a_Vehicle_Icon },
-    { name: "Dunne Loadlugger 3c Vehicle", icon: IconDunne_Loadlugger_3c_Vehicle_Icon },
-    { name: "Dunne Responder 3e Vehicle", icon: IconDunne_Responder_3e_Vehicle_Icon },
-    { name: "Dunne Transport Vehicle", icon: IconDunne_Transport_Vehicle_Icon },
-    { name: "Field Artillery", icon: IconField_Artillery },
-    { name: "Flood Ascension Mk. V Vehicle", icon: IconFlood_Ascension_Mk_V_Vehicle_Icon },
-    { name: "Flood Juggernaut Mk. VII Vehicle", icon: IconFlood_Juggernaut_Mk_VII_Vehicle_Icon },
-    { name: "Flood Mk-1 Vehicle", icon: IconFlood_Mk_1_Vehicle_Icon },
-    { name: "G40 Sagittarii Vehicle", icon: IconG40_Sagittarii_Vehicle_Icon },
-    { name: "Gallagher Highwayman Mk. III Vehicle", icon: IconGallagher_Highwayman_Mk_III_Vehicle_Icon },
-    { name: "Gallagher Outlaw Mk. II Vehicle", icon: IconGallagher_Outlaw_Mk_II_Vehicle_Icon },
-    { name: "H-10 Pelekys Vehicle", icon: IconH_10_Pelekys_Vehicle_Icon },
-    { name: "H-8 Kranesca Vehicle", icon: IconH_8_Kranesca_Vehicle_Icon },
-    { name: "H5 Hatchet Vehicle", icon: IconH5_Hatchet_Vehicle_Icon },
-    { name: "HC-2 Scorpion Vehicle", icon: IconHC_2_Scorpion_Vehicle_Icon },
-    { name: "HC-7 Ballista Vehicle", icon: IconHC_7_Ballista_Vehicle_Icon },
-    { name: "Herne QMW 1a Scourge Hunter Vehicle", icon: IconHerne_QMW_1a_Scourge_Hunter_Vehicle_Icon },
-    { name: "HH-a Javelin Vehicle", icon: IconHH_a_Javelin_Vehicle_Icon },
-    { name: "HH-b Hoplite Vehicle", icon: IconHH_b_Hoplite_Vehicle_Icon },
-    { name: "HH-d Peltast Vehicle", icon: IconHH_d_Peltast_Vehicle_Icon },
-    { name: "King Gallant MK-II", icon: IconKing_Gallant_MK_II_Icon },
-    { name: "King Spire MK-I", icon: IconKing_Spire_MK_I_Icon },
-    { name: "Kivela Power Wheel 80-1 Vehicle", icon: IconKivela_Power_Wheel_80_1_Vehicle_Icon },
-    { name: "Lance-36 Vehicle", icon: IconLance_36_Vehicle_Icon },
-    { name: "Lance-40 Hallberd Vehicle", icon: IconLance_40_Hallberd_Vehicle_Icon },
-    { name: "Light Tank", icon: IconLight_Tank_Icon },
-    { name: "Logan Cannon 150mm Vehicle", icon: IconLogan_Cannon_150mm_Vehicle_Icon },
-    { name: "Motorboat", icon: IconMotorboat_Icon },
-    { name: "Mulloy Flying Squid", icon: IconMulloy_Flying_Squid },
-    { name: "Mulloy LPC Vehicle", icon: IconMulloy_LPC_Vehicle_Icon },
-    { name: "Niska Mk. 1 Gun Motor Carriage Vehicle", icon: IconNiska_Mk_1_Gun_Motor_Carriage_Vehicle_Icon },
-    { name: "Niska Mk. 2 Blinder Vehicle", icon: IconNiska_Mk_2_Blinder_Vehicle_Icon },
-    { name: "Noble Widow MK. XIV Vehicle", icon: IconNoble_Widow_MK_XIV_Vehicle_Icon },
-    { name: "PL-1 Phalanx Vehicle", icon: IconPL_1_Phalanx_Vehicle_Icon },
-    { name: "R-1 Hauler Vehicle", icon: IconR_1_Hauler_Vehicle_Icon },
-    { name: "R-12 - Salus Ambulance Vehicle", icon: IconR_12___Salus_Ambulance_Vehicle_Icon },
-    { name: "R-15 - Chariot Vehicle", icon: IconR_15___Chariot_Vehicle_Icon },
-    { name: "R-5b Sisyphus Hauler Vehicle", icon: IconR_5b_Sisyphus_Hauler_Vehicle_Icon },
-    { name: "R-9 Speartip Escort Vehicle", icon: IconR_9_Speartip_Escort_Vehicle_Icon },
-    { name: "Relic Bus", icon: IconRelic_Bus_Icon },
-    { name: "Repurposed Truck", icon: IconRepurposed_Truck_Icon },
-    { name: "Resource Truck Vehicle", icon: IconResource_Truck_Vehicle_Icon },
-    { name: "RR-3 Stolon Tanker Vehicle", icon: IconRR_3_Stolon_Tanker_Vehicle_Icon },
-    { name: "Scout Tanks", icon: IconScout_Tanks },
-    { name: "Silverhand - Mk. IV Vehicle", icon: IconSilverhand___Mk_IV_Vehicle_Icon },
-    { name: "Silverhand Chieftan - Mk. VI Vehicle", icon: IconSilverhand_Chieftan___Mk_VI_Vehicle_Icon },
-    { name: "Staff Car", icon: IconStaff_Car_Icon },
-    { name: "Storm Tank", icon: IconStorm_Tank_Icon },
-    { name: "Swallowtail 988-145-2 Vehicle", icon: IconSwallowtail_988_145_2_Vehicle_Icon },
-    { name: "T12 Actaeon Tankette Vehicle", icon: IconT12_Actaeon_Tankette_Vehicle_Icon },
-    { name: "T20 Ixion Tankette Vehicle", icon: IconT20_Ixion_Tankette_Vehicle_Icon },
-    { name: "T3 Xiphos Vehicle", icon: IconT3_Xiphos_Vehicle_Icon },
-    { name: "T5 Percutio Vehicle", icon: IconT5_Percutio_Vehicle_Icon },
-    { name: "T8 Gemini Vehicle", icon: IconT8_Gemini_Vehicle_Icon },
-    { name: "Transport Bus", icon: IconTransport_Bus_Icon },
-    { name: "Transport Truck", icon: IconTransport_Truck },
-    { name: "Type C - Charon Vehicle", icon: IconType_C___Charon_Vehicle_Icon },
-    { name: "UV-05 Collector Vehicle", icon: IconUV_05_Collector_Vehicle_Icon },
-    { name: "UV-05a Argonaut Vehicle", icon: IconUV_05a_Argonaut_Vehicle_Icon },
-    { name: "UV-24 Icarus Vehicle", icon: IconUV_24_Icarus_Vehicle_Icon },
-    { name: "UV-5c Odyssey Vehicle", icon: IconUV_5c_Odyssey_Vehicle_Icon },
-    { name: "OBrien v110 Vehicle", icon: IconOBrien_v110_Vehicle_Icon },
-    { name: "OBrien v.113 Gravekeeper Vehicle", icon: IconOBrien_v113_Gravekeeper_Vehicle_Icon },
-    { name: "OBrien v.121 Highlander Vehicle", icon: IconOBrien_v121_Highlander_Vehicle_Icon },
-    { name: "OBrien v.101 Freeman Vehicle", icon: IconOBrien_v101_Freeman_Vehicle_Icon },
-    { name: "R-5 Atlas Hauler Vehicle", icon: IconR_5_Atlas_Hauler_Vehicle_Icon },
-    { name: "Bonesaw", icon: IconBonesaw },
-    { name: "Carabine", icon: IconCarabine },
-    { name: "Fists", icon: IconFists },
-    { name: "Grenade", icon: IconGrenade },
-    { name: "HMG", icon: IconHMG },
-    { name: "Ignifist", icon: IconIgnifist },
-    { name: "Catara mo II", icon: IconCatara_mo_II },
-    { name: "KRN886 127 Gast Machine Gun", icon: IconKRN886_127_Gast_Machine_Gun },
-    { name: "Mortar-0", icon: IconMortar_0 },
-    { name: "Pistol-0", icon: IconPistol_0 },
-    { name: "R.P.G.", icon: IconRPG },
-    { name: "Revolver", icon: IconRevolver },
-    { name: "Rifle", icon: IconRifle },
-    { name: "RocketBooster", icon: IconRocketBoosterIcon },
-    { name: "RocketWarhead", icon: IconRocketWarheadIcon },
-    { name: "Shotgun", icon: IconShotgun },
-    { name: "Smg-1", icon: IconSmg_1 },
-    { name: "SniperRifleItem", icon: IconSniperRifleItemIcon },
-    { name: "StormRifle", icon: IconStormRifle },
-    { name: "Auger Sniper", icon: IconAuger_Sniper },
-    { name: "Bane 45", icon: IconBane_45 },
-    { name: "BF5 White Ash Flask Grenade", icon: IconBF5_White_Ash_Flask_Grenade },
-    { name: "Bomastone Grenade", icon: IconBomastone_Grenade },
-    { name: "Booker Storm Rifle", icon: IconBooker_Storm_Rifle },
-    { name: "Burst Pistol", icon: IconBurst_Pistol },
-    { name: "Clancy Cinder M3", icon: IconClancy_Cinder_M3 },
-    { name: "Cutler Foebreaker", icon: IconCutler_Foebreaker },
-    { name: "Cutler Launcher", icon: IconCutler_Launcher },
-    { name: "Daucus isg", icon: IconDaucus_isg },
-    { name: "Dusk ce.III", icon: IconDusk_ceIII },
-    { name: "Fuscina Rifle", icon: IconFuscina_Rifle },
-    { name: "Gast MG", icon: IconGast_MG },
-    { name: "Green Ash", icon: IconGreen_Ash },
-    { name: "HE Grenade", icon: IconHE_Grenade },
-    { name: "KLG901-2 Lunaire F", icon: IconKLG901_2_Lunaire_F },
-    { name: "KRR2-790 Omen", icon: IconKRR2_790_Omen },
-    { name: "Lamentum mm.IV", icon: IconLamentum_mmIV },
-    { name: "Land Mine", icon: IconLand_Mine },
-    { name: "Lionclaw mc.VIII", icon: IconLionclaw_mcVIII },
-    { name: "Malone MG", icon: IconMalone_MG },
-    { name: "Malone Ratcatcher MK.1", icon: IconMalone_Ratcatcher_MK1 },
-    { name: "Mounted Bonesaw", icon: IconMounted_Bonesaw },
-    { name: "No.1 The Liar SMG", icon: IconNo1_The_Liar_SMG },
-    { name: "Pitch Gun", icon: IconPitch_Gun },
-    { name: "Sampo Auto-Rifle 77", icon: IconSampo_Auto_Rifle_77 },
-    { name: "Satchel Chrg", icon: IconSatchel_Chrg },
-    { name: "Smk Grenade", icon: IconSmk_Grenade },
-    { name: "Sticky Bomb", icon: IconSticky_Bomb },
-    { name: "The Hangman 757", icon: IconThe_Hangman_757 },
-    { name: "Typhon ra.XII", icon: IconTyphon_raXII },
-    { name: "Venom c.II", icon: IconVenom_cII },
-    { name: "Volta Repeater", icon: IconVolta_RepeaterIcon },
-    { name: "Hydras Whisper", icon: IconHydras_Whisper }
-];
+const IconList = {
+    "medical": [
+        { name: "Soldier Supplies", icon: IconShirts },
+        { name: "Bandages", icon: IconBandages },
+        { name: "Blood Plasma", icon: IconBloodPlasmaItemIcon },
+        { name: "First Aid kit", icon: IconFirst_Aid_kit },
+        { name: "Trauma Kit", icon: IconTrauma_Kit }],
+    "supply": [
+        { name: "Bunker Supplies", icon: IconBSupp },
+        { name: "Garrison Supplies", icon: IconGSupp }],
+    "shippable": [
+        { name: "CementMixer", icon: IconCementMixerIcon },
+        { name: "ResourceContainer", icon: IconResourceContainerIcon },
+        { name: "Barbed Wire Pallet Structure", icon: IconBarbed_Wire_Pallet_Structure },
+        { name: "Huber Exalt 150mm Structure", icon: IconHuber_Exalt_150mm_Structure },
+        { name: "Huber Lariat 120mm Structure", icon: IconHuber_Lariat_120mm_Structure },
+        { name: "Metal Beam Pallet Structure", icon: IconMetal_Beam_Pallet_Structure },
+        { name: "Production Parts Structure", icon: IconProduction_Parts_Structure },
+        { name: "Sandbags Pallet Structure", icon: IconSandbags_Pallet_Structure },
+        { name: "Shipping Container Structure", icon: IconShipping_Container_Structure },
+        { name: "Small Shipping Container Structure", icon: IconSmall_Shipping_Container_Structure }],
+    "uniform": [
+        { name: "Gunner's Breastplate", icon: IconArmourUniformWIcon },
+        { name: "Velian Flak Vest", icon: IconArmourUniformCIcon },
+        { name: "Fabric Rucksack", icon: IconEngineerUniformCIcon },
+        { name: "Sapper Gear", icon: IconEngineerUniformWIcon },
+        { name: "Grenadier's Baldric", icon: IconGrenadeUniformCIcon },
+        { name: "Medic Fatigues", icon: IconMedicUniformCIcon },
+        { name: "Physician's Jacket", icon: IconMedicUniformWIcon },
+        { name: "Officialis' Attire", icon: IconOfficerUniformCIcon },
+        { name: "Officer's Regalia", icon: IconOfficerUniformWIcon },
+        { name: "Legionary's Oilcoat", icon: IconRainUniformCIcon },
+        { name: "Recon Camo", icon: IconScoutUniformCIcon },
+        { name: "Outrider's Mantle", icon: IconScoutUniformWIcon },
+        { name: "Heavy Topcoat", icon: IconSnowUniformCIcon },
+        { name: "Caoivish Parka", icon: IconSnowUniformWIcon },
+        { name: "Tankman's Coveralls", icon: IconTankUniformCIcon },
+        { name: "Padded Boiler Suit", icon: IconTankUniformWIcon }],
+    "tool": [
+        { name: "Abisme AT-99", icon: IconLand_Mine },
+        { name: "The Ospreay", icon: IconGrenadeAdapterIcon },
+        { name: "Rocket Booster", icon: IconRocketBoosterIcon },
+        { name: "Radio", icon: IconRadio },
+        { name: "Shovel", icon: IconShovelIcon },
+        { name: "Tripod", icon: IconTripodItemIcon },
+        { name: "Wrench", icon: IconWrench },
+        { name: "Gas Mask", icon: IconGas_Mask },
+        { name: "Gas Mask Filter", icon: IconGas_Mask_Filter },
+        { name: "Binoculars", icon: IconBinoculars },
+        { name: "Buckhorn CCQ-18", icon: IconBayonet },
+        { name: "Listening Kit", icon: IconListening_Kit },
+        { name: "Radio backpacks", icon: IconRadio_backpacks },
+        { name: "Sledge Hammer", icon: IconSledge_Hammer },
+        { name: "Alligator Charge", icon: IconSatchel_Chrg },
+        { name: "Hydra's Whisper", icon: IconHydras_Whisper }],
+    "resource": [
+        { name: "Components", icon: IconComponents },
+        { name: "Copper", icon: IconCopper },
+        { name: "CrudeOil", icon: IconCrudeOilIcon },
+        { name: "Diesel", icon: IconDiesel },
+        { name: "HeavyExplosiveMaterial", icon: IconHeavyExplosiveMaterialIcon },
+        { name: "MetalBeamMaterial", icon: IconMetalBeamMaterial },
+        { name: "Petrol", icon: IconPetrol },
+        { name: "SandbagsMaterial", icon: IconSandbagsMaterial },
+        { name: "Sulfur", icon: IconSulfur },
+        { name: "Basic Materials", icon: IconBasic_Materials },
+        { name: "Concrete Materials", icon: IconConcrete_Materials },
+        { name: "Copper Alloy", icon: IconCopper_Alloy },
+        { name: "Explosive Materials", icon: IconExplosive_Materials },
+        { name: "Refined Materials", icon: IconRefined_Materials }],
+    "vehicle": [
+        { name: "Barge", icon: IconBarge },
+        { name: "CraneVehicle", icon: IconCraneVehicleIcon },
+        { name: "FlatbedTruckVehicle", icon: IconFlatbedTruckVehicleIcon },
+        { name: "FreighterVehicle", icon: IconFreighterVehicleIcon },
+        { name: "Harvester", icon: IconHarvester },
+        { name: "68-45 Smelter Heavy Field Gun Vehicle", icon: Icon68_45_Smelter_Heavy_Field_Gun_Vehicle_Icon },
+        { name: "74b-1 Ronan Gunship Vehicle", icon: Icon74b_1_Ronan_Gunship_Vehicle_Icon },
+        { name: "74c-2 Ronan Meteora Gunship Vehicle", icon: Icon74c_2_Ronan_Meteora_Gunship_Vehicle_Icon },
+        { name: "85K-a Spatha Vehicle", icon: Icon85K_a_Spatha_Vehicle_Icon },
+        { name: "85K-b Falchion Vehicle", icon: Icon85K_b_Falchion_Vehicle_Icon },
+        { name: "86K-a Bardiche Vehicle", icon: Icon86K_a_Bardiche_Vehicle_Icon },
+        { name: "86K-c Ranseur Vehicle", icon: Icon86K_c_Ranseur_Vehicle_Icon },
+        { name: "AA-2 Battering Ram Vehicle", icon: IconAA_2_Battering_Ram_Vehicle_Icon },
+        { name: "AB-11 Doru Vehicle", icon: IconAB_11_Doru_Vehicle_Icon },
+        { name: "AB-8 Acheron Vehicle", icon: IconAB_8_Acheron_Vehicle_Icon },
+        { name: "Balfour Falconer 250mm Vehicle", icon: IconBalfour_Falconer_250mm_Vehicle_Icon },
+        { name: "Balfour Rampart 40mm Vehicle", icon: IconBalfour_Rampart_40mm_Vehicle_Icon },
+        { name: "Balfour Wolfhound 40mm Vehicle", icon: IconBalfour_Wolfhound_40mm_Vehicle_Icon },
+        { name: "Collins Cannon 68mm Vehicle", icon: IconCollins_Cannon_68mm_Vehicle_Icon },
+        { name: "Construction Vehicle", icon: IconConstruction_Vehicle },
+        { name: "Devitt Ironhide Mk. IV Vehicle", icon: IconDevitt_Ironhide_Mk_IV_Vehicle_Icon },
+        { name: "Devitt Mark III Vehicle", icon: IconDevitt_Mark_III_Vehicle_Icon },
+        { name: "Devitte-Caine Mk-IV MMR", icon: IconDevitte_Caine_Mk_IV_MMR_Icon },
+        { name: "Drummond 100a Vehicle", icon: IconDrummond_100a_Vehicle_Icon },
+        { name: "Drummond Loscann 55c Vehicle", icon: IconDrummond_Loscann_55c_Vehicle_Icon },
+        { name: "Drummond Spitfire 100d Vehicle", icon: IconDrummond_Spitfire_100d_Vehicle_Icon },
+        { name: "Dunne Caravaner 2f Vehicle", icon: IconDunne_Caravaner_2f_Vehicle_Icon },
+        { name: "Dunne Fuelrunner 2d Vehicle", icon: IconDunne_Fuelrunner_2d_Vehicle_Icon },
+        { name: "Dunne Landrunner 12c Vehicle", icon: IconDunne_Landrunner_12c_Vehicle_Icon },
+        { name: "Dunne Leatherback 2a Vehicle", icon: IconDunne_Leatherback_2a_Vehicle_Icon },
+        { name: "Dunne Loadlugger 3c Vehicle", icon: IconDunne_Loadlugger_3c_Vehicle_Icon },
+        { name: "Dunne Responder 3e Vehicle", icon: IconDunne_Responder_3e_Vehicle_Icon },
+        { name: "Dunne Transport Vehicle", icon: IconDunne_Transport_Vehicle_Icon },
+        { name: "G40 Sagittarii Vehicle", icon: IconG40_Sagittarii_Vehicle_Icon },
+        { name: "Gallagher Highwayman Mk. III Vehicle", icon: IconGallagher_Highwayman_Mk_III_Vehicle_Icon },
+        { name: "Gallagher Outlaw Mk. II Vehicle", icon: IconGallagher_Outlaw_Mk_II_Vehicle_Icon },
+        { name: "H-10 Pelekys Vehicle", icon: IconH_10_Pelekys_Vehicle_Icon },
+        { name: "H-8 Kranesca Vehicle", icon: IconH_8_Kranesca_Vehicle_Icon },
+        { name: "H5 Hatchet Vehicle", icon: IconH5_Hatchet_Vehicle_Icon },
+        { name: "HC-2 Scorpion Vehicle", icon: IconHC_2_Scorpion_Vehicle_Icon },
+        { name: "HC-7 Ballista Vehicle", icon: IconHC_7_Ballista_Vehicle_Icon },
+        { name: "HH-a Javelin Vehicle", icon: IconHH_a_Javelin_Vehicle_Icon },
+        { name: "HH-b Hoplite Vehicle", icon: IconHH_b_Hoplite_Vehicle_Icon },
+        { name: "HH-d Peltast Vehicle", icon: IconHH_d_Peltast_Vehicle_Icon },
+        { name: "King Gallant MK-II", icon: IconKing_Gallant_MK_II_Icon },
+        { name: "King Spire MK-I", icon: IconKing_Spire_MK_I_Icon },
+        { name: "Kivela Power Wheel 80-1 Vehicle", icon: IconKivela_Power_Wheel_80_1_Vehicle_Icon },
+        { name: "Logan Cannon 150mm Vehicle", icon: IconLogan_Cannon_150mm_Vehicle_Icon },
+        { name: "Motorboat", icon: IconMotorboat_Icon },
+        { name: "Mulloy LPC Vehicle", icon: IconMulloy_LPC_Vehicle_Icon },
+        { name: "Niska Mk. 1 Gun Motor Carriage Vehicle", icon: IconNiska_Mk_1_Gun_Motor_Carriage_Vehicle_Icon },
+        { name: "Niska Mk. 2 Blinder Vehicle", icon: IconNiska_Mk_2_Blinder_Vehicle_Icon },
+        { name: "Noble Widow MK. XIV Vehicle", icon: IconNoble_Widow_MK_XIV_Vehicle_Icon },
+        { name: "R-12 - Salus Ambulance Vehicle", icon: IconR_12___Salus_Ambulance_Vehicle_Icon },
+        { name: "R-15 - Chariot Vehicle", icon: IconR_15___Chariot_Vehicle_Icon },
+        { name: "R-5b Sisyphus Hauler Vehicle", icon: IconR_5b_Sisyphus_Hauler_Vehicle_Icon },
+        { name: "R-9 Speartip Escort Vehicle", icon: IconR_9_Speartip_Escort_Vehicle_Icon },
+        { name: "RR-3 Stolon Tanker Vehicle", icon: IconRR_3_Stolon_Tanker_Vehicle_Icon },
+        { name: "Silverhand - Mk. IV Vehicle", icon: IconSilverhand___Mk_IV_Vehicle_Icon },
+        { name: "Silverhand Chieftan - Mk. VI Vehicle", icon: IconSilverhand_Chieftan___Mk_VI_Vehicle_Icon },
+        { name: "Swallowtail 988-145-2 Vehicle", icon: IconSwallowtail_988_145_2_Vehicle_Icon },
+        { name: "T12 Actaeon Tankette Vehicle", icon: IconT12_Actaeon_Tankette_Vehicle_Icon },
+        { name: "T20 Ixion Tankette Vehicle", icon: IconT20_Ixion_Tankette_Vehicle_Icon },
+        { name: "T3 Xiphos Vehicle", icon: IconT3_Xiphos_Vehicle_Icon },
+        { name: "T5 Percutio Vehicle", icon: IconT5_Percutio_Vehicle_Icon },
+        { name: "T8 Gemini Vehicle", icon: IconT8_Gemini_Vehicle_Icon },
+        { name: "Type C - Charon Vehicle", icon: IconType_C___Charon_Vehicle_Icon },
+        { name: "UV-05 Collector Vehicle", icon: IconUV_05_Collector_Vehicle_Icon },
+        { name: "UV-05a Argonaut Vehicle", icon: IconUV_05a_Argonaut_Vehicle_Icon },
+        { name: "UV-24 Icarus Vehicle", icon: IconUV_24_Icarus_Vehicle_Icon },
+        { name: "UV-5c Odyssey Vehicle", icon: IconUV_5c_Odyssey_Vehicle_Icon },
+        { name: "OBrien v110 Vehicle", icon: IconOBrien_v110_Vehicle_Icon },
+        { name: "OBrien v.113 Gravekeeper Vehicle", icon: IconOBrien_v113_Gravekeeper_Vehicle_Icon },
+        { name: "OBrien v.121 Highlander Vehicle", icon: IconOBrien_v121_Highlander_Vehicle_Icon },
+        { name: "OBrien v.101 Freeman Vehicle", icon: IconOBrien_v101_Freeman_Vehicle_Icon },
+        { name: "R-5 Atlas Hauler Vehicle", icon: IconR_5_Atlas_Hauler_Vehicle_Icon }],
+    "small arms": [
+        { name: "Blakerow 871", icon: IconCarabine },
+        { name: "Grenade", icon: IconGrenade },
+        { name: "Ignifist", icon: IconIgnifist },
+        { name: "Catara mo II", icon: IconCatara_mo_II },
+        { name: "KRN886 127 Gast Machine Gun", icon: IconKRN886_127_Gast_Machine_Gun },
+        { name: "Cometa T2-9", icon: IconRevolver },
+        { name: "Brasa Shotgun", icon: IconShotgun },
+        { name: "Fiddler Submachine Gun Model 868", icon: IconSmg_1 },
+        { name: "Clancy-Raca M4", icon: IconSniperRifleItemIcon },
+        { name: "Aalto Storm Rifle 24", icon: IconStormRifle },
+        { name: "KRR3-792 Auger", icon: IconAuger_Sniper },
+        { name: "Bomastone Grenade", icon: IconBomastone_Grenade },
+        { name: "Booker Storm Rifle Model 838", icon: IconBooker_Storm_Rifle },
+        { name: "Cascadier 873", icon: IconBurst_Pistol },
+        { name: "Clancy Cinder M3", icon: IconClancy_Cinder_M3 },
+        { name: "Dusk ce.III", icon: IconDusk_ceIII },
+        { name: "Fuscina pi.I", icon: IconFuscina_Rifle },
+        { name: "Green Ash Grenade", icon: IconGreen_Ash },
+        { name: "KRR2-790 Omen", icon: IconKRR2_790_Omen },
+        { name: "Lionclaw mc.VIII", icon: IconLionclaw_mcVIII },
+        { name: "Malone MK.2", icon: IconMalone_MG },
+        { name: "No.1 The Liar Submachine Gun", icon: IconNo1_The_Liar_SMG },
+        { name: "The Pitch Gun mc.V", icon: IconPitch_Gun },
+        { name: "Sampo Auto-Rifle 77", icon: IconSampo_Auto_Rifle_77 },
+        { name: "PT-815 Smoke Grenade", icon: IconSmk_Grenade },
+        { name: "The Hangman 757", icon: IconThe_Hangman_757 },
+        { name: "Volta r.I Repeater", icon: IconVolta_RepeaterIcon },
+        { name: "7.92mm", icon: Icon792mmv1 },
+        { name: "9mm SMG", icon: Icon9mm_SMG },
+        { name: "9mm", icon: Icon9mm },
+        { name: "Buckshot", icon: IconBuckshot },
+        { name: "7.62mm", icon: Icon762mm }],
+    "heavy arms": [
+        { name: "Cremari Mortar", icon: IconMortar_0 },
+        { name: "Bane 45", icon: IconBane_45 },
+        { name: "BF5 White Ash Flask Grenade", icon: IconBF5_White_Ash_Flask_Grenade },
+        { name: "Cutler Foebreaker", icon: IconCutler_Foebreaker },
+        { name: "Cutler Launcher", icon: IconCutler_Launcher },
+        { name: "Daucus isg", icon: IconDaucus_isg },
+        { name: "Mammon 91-b", icon: IconHE_Grenade },
+        { name: "KLG901-2 Lunaire F", icon: IconKLG901_2_Lunaire_F },
+        { name: "Lamentum mm.IV", icon: IconLamentum_mmIV },
+        { name: "Malone Ratcatcher MK.1", icon: IconMalone_Ratcatcher_MK1 },
+        { name: "Mounted Bonesaw MK.3", icon: IconMounted_Bonesaw },
+        { name: "Bonesaw MK.3", icon: IconBonesaw },
+        { name: "Anti-Tank Sticky Bomb", icon: IconSticky_Bomb },
+        { name: "Typhon ra.XII", icon: IconTyphon_raXII },
+        { name: "Venom c.II 35", icon: IconVenom_cII },
+        { name: "30mm", icon: Icon30mm },
+        { name: "ARC/RPG", icon: IconATRPG_Indirect_shell },
+        { name: "AP/RPG", icon: IconATRPG_Shell },
+        { name: "Mortar Shell", icon: IconMortar_Shell },
+        { name: "Mortar Flare Shell", icon: IconMortarAmmoIconFlare },
+        { name: "RPG", icon: IconRPG_shell_ },
+        { name: "Tremola Grenade GPb-1", icon: IconTremola_Grenade_GPb_1_Icon },
+        { name: "Mortar Shrapnel Shell", icon: IconMortarAmmoIconShrapnel },
+        { name: "20mm", icon: Icon20mm },
+    ],
+    "heavy ammunition": [
+        { name: "Warhead", icon: IconRocketWarheadIcon },
+        { name: "150mm", icon: Icon150mm },
+        { name: "250mm", icon: Icon250mm },
+        { name: "68 AT", icon: Icon68mm },
+        { name: "120mm", icon: Icon120mm },
+        { name: "40mm", icon: Icon40mm },
+        { name: "300mm", icon: Icon300mm }
+    ]
+};
 
 export { IconList }

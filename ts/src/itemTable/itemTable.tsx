@@ -1,11 +1,8 @@
-import { HStack, VStack, Image, Text, Input, Button } from "@chakra-ui/react";
+import { HStack, VStack, Image, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { IconList } from "../icons/icons";
-import { MAX_ITEM_TABLE_DISPLAY_SIZE } from "../config/config";
 
 const ItemSelectPage = (props: any) => {
-    const [filter, setFilter] = useState('');
-
     const [rowNumber, setRowNumber] = useState(8);
     useEffect(() => {
         function handleResize() {
@@ -22,84 +19,88 @@ const ItemSelectPage = (props: any) => {
     }, []);
 
 
-    return (
-        <VStack>
-            <Input onChange={event => setFilter(event.target.value)}
-                placeholder="Search..."
-                width={[
-                    '100%', // 0-30em
-                    '80%', // 30em-48em
-                    '50%', // 48em-62em
-                ]} />
-            <ItemsTable filter={filter} onClick={props.onClick} rowNum={rowNumber} />
-        </VStack>)
+    return (<ItemsTable onClick={props.onClick} rowNum={rowNumber} />)
 };
 
-const PoorMansPagination = (props: { size: number, onClick: (page: number) => void, currentPage: number }) => {
-    let buttonSize = props.size;
-    let buttons = [];
-    for (let i = 0; i < buttonSize; i++) {
-        buttons.push(<Button onClick={() => props.onClick(i)}
-            disabled={i == props.currentPage ? true : false}>
-            {(i + 1).toString()}
-        </Button>);
-    };
-    return (
-        <HStack>
-            {buttons}
-        </HStack>
-    )
-};
-
-const ItemsTable = (props: { filter?: string, rowNum?: number, onClick?: (name: string) => any }) => {
-    const [currentPage, setCurrentPage] = useState(0);
-
+const ItemsTable = (props: { rowNum: number, onClick?: (name: string) => any }) => {
     let sources = IconList;
-
-    if (props.filter && props.filter != "") {
-        let filter: string = props.filter.toLowerCase();
-        sources = sources.filter(({ name }) => name.toLowerCase().includes(filter));
-    }
-    let rowNum = 8;
-    if (props.rowNum) {
-        rowNum = props.rowNum;
-    }
-
-    let imgs = [];
-    let row: JSX.Element[] = [];
-    for (let i = MAX_ITEM_TABLE_DISPLAY_SIZE * currentPage; i < sources.length; i++) {
-        if (i >= MAX_ITEM_TABLE_DISPLAY_SIZE * (currentPage + 1)) {
-            break;
-        };
-
-        if (row.length == rowNum) {
-            imgs.push(<HStack>{row}</HStack>);
-            row = [];
-        }
-        row.push(<VStack key={sources[i].name}
-            onClick={() => { if (props.onClick) props.onClick(sources[i].name); }}>
+    let rowNum = props.rowNum;
+    const IconWithDesc = ({ name, icon }: { name: string, icon: string }) => {
+        return (<VStack key={name}
+            onClick={() => { if (props.onClick) props.onClick(name); }}>
             <Image
                 boxSize='100px'
                 objectFit='contain'
-                src={sources[i].icon}
-                alt={sources[i].name}
+                src={icon}
+                alt={name}
             />
-            <Text maxW="100px">{sources[i].name}</Text>
+            <Text maxW="100px">{name}</Text>
         </VStack>);
-    }
+    };
 
-    if (row.length != 0) {
-        imgs.push(<HStack>{row}</HStack>);
-    }
-    
-    let buttonSize = Math.ceil(sources.length / MAX_ITEM_TABLE_DISPLAY_SIZE);
-    imgs.push(<PoorMansPagination onClick={(page: number) => setCurrentPage(page)}
-        size={buttonSize}
-        currentPage={currentPage} />);
+    const IconsTable = ({ icons }: { icons: Array<{ name: string, icon: string }> }) => {
+        let result = [];
+        let row: Array<JSX.Element> = [];
+        for (let i = 0; i < icons.length; i++) {
+            if (row.length == rowNum) {
+                result.push(<HStack key={i}>{row}</HStack>);
+                row = [];
+            }
+            row.push(<IconWithDesc {...icons[i]} />);
+        }
+        if (row.length != 0) {
+            result.push(<HStack key={icons.length}>{row}</HStack>);
+        }
+        return (<VStack>{result}</VStack>)
+    };
 
-    return (<VStack>
-        {imgs}
-    </VStack>);
+    return (<Tabs isLazy>
+        <TabList>
+            <Tab>Small Arms</Tab>
+            <Tab>Heavy Arms</Tab>
+            <Tab>Heavy Ammunition</Tab>
+            <Tab>Utility</Tab>
+            <Tab>Supply</Tab>
+            <Tab>Medical</Tab>
+            <Tab>Uniforms</Tab>
+            <Tab>Resource</Tab>
+            <Tab>Vehicle</Tab>
+            <Tab>Shippable</Tab>
+        </TabList>
+
+        <TabPanels>
+            <TabPanel>
+                <IconsTable icons={sources["small arms"]} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources["heavy arms"]} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources["heavy ammunition"]} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.tool} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.supply} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.medical} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.uniform} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.resource} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.vehicle} />
+            </TabPanel>
+            <TabPanel>
+                <IconsTable icons={sources.shippable} />
+            </TabPanel>
+        </TabPanels>
+    </Tabs>);
 }
 
 export default ItemSelectPage;
