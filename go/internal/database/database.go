@@ -509,16 +509,16 @@ func (m *DataBaseManager) GetClanHistory(clan string, limit ...int) []HistoryRec
 	for rows.Next() {
 		var action int
 		var user string
-		var item string
-		var size int
+		var item sql.NullString
+		var size sql.NullInt32
 		var time time.Time
 		var location string
 		rows.Scan(&action, &user, &item, &size, &location, &time)
 		resultArray = append(resultArray, HistoryRecord{
 			Action:   action,
 			User:     user,
-			ItemType: item,
-			Size:     size,
+			ItemType: item.String,
+			Size:     int(size.Int32),
 			Location: location,
 			Time:     time,
 		})
