@@ -5,7 +5,7 @@ import Icon68mm from "./ammo/68mm.png"
 import Icon792mmv1 from "./ammo/7.92mmv1.png"
 import Icon300mm from "./ammo/300mm.png"
 import Icon9mm_SMG from "./ammo/9mm_SMG.png"
-import Icon9mm from "./ammo/9mm.png"
+import Icon8mm from "./ammo/8mm.png"
 import IconATRPG_Indirect_shell from "./ammo/ATRPG_Indirect_shell.png"
 import IconATRPG_Shell from "./ammo/ATRPG_Shell.png"
 import IconBuckshot from "./ammo/Buckshot.png"
@@ -379,7 +379,7 @@ const IconList = {
         { name: "Volta r.I Repeater", icon: IconVolta_RepeaterIcon },
         { name: "7.92mm", icon: Icon792mmv1 },
         { name: "9mm SMG", icon: Icon9mm_SMG },
-        { name: "9mm", icon: Icon9mm },
+        { name: "8mm", icon: Icon8mm },
         { name: "Buckshot", icon: IconBuckshot },
         { name: "7.62mm", icon: Icon762mm }],
     "heavy arms": [

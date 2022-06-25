@@ -138,7 +138,7 @@ const LocationsList = (props: any) => {
                         <PopoverCloseButton onClick={() => onClose()}/>
                         <PopoverBody>
                             <VStack>
-                                <Input placeholder='Stockpile name' onChange={event => setStockpileName(event.target.value)} />
+                                <Input placeholder='Stockpile Location' onChange={event => setStockpileName(event.target.value)} />
                                 <Input placeholder='Code' onChange={event => setStockpileCode(event.target.value)} />
                             </VStack>
                         </PopoverBody>
