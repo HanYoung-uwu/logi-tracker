@@ -25,6 +25,10 @@ type InviteToken struct {
 	Token string `form:"token" binding:"required"`
 }
 
+type Name struct {
+	Name string `json:"name"`
+}
+
 type TokenArrayWithMutex struct {
 	tokens []interface{}
 	lock   *sync.Mutex
@@ -37,6 +41,7 @@ func makeTokenArrayWithMutex() TokenArrayWithMutex {
 type TokenManager struct {
 	tokens         *sync.Map // string, *database.Token
 	ticker         *time.Ticker
+	deletedAccount *sync.Map // account name, expire time
 	tokensToWrite  *TokenArrayWithMutex
 	tokensToDelete *TokenArrayWithMutex
 }
@@ -55,6 +60,7 @@ func GetAccountManager() *TokenManager {
 				&TokenManager{
 					&sync.Map{},
 					time.NewTicker(10 * time.Hour),
+					&sync.Map{},
 					&tokensToWrite,
 					&tokensToDelete}
 			go singleton.startPeriodicTasks()
@@ -78,6 +84,17 @@ func (t *TokenManager) startPeriodicTasks() {
 			if token.ExpireTime.Before(now) {
 				t.tokens.Delete(key)
 				t.tokensToDelete.tokens = append(t.tokensToDelete.tokens, key)
+				cleaned += 1
+			}
+			return true
+		})
+		t.deletedAccount.Range(func(key interface{}, val interface{}) bool {
+			expireTime, ok := val.(time.Time)
+			if !ok {
+				log.Panic("invalid Time")
+			}
+			if expireTime.Before(now) {
+				t.deletedAccount.Delete(key)
 				cleaned += 1
 			}
 			return true
@@ -172,7 +189,7 @@ func (t *TokenManager) GenerateClanAdminInvitationToken() string {
 	token := utility.RandBytes(92)
 	for {
 		// invitation links are only valid for one day
-		if _, exists := t.tokens.LoadOrStore(string(token), &Token{Value: string(token), ExpireTime: time.Now().Add(1000000000 * 3600 * 24), Account: account}); exists {
+		if _, exists := t.tokens.LoadOrStore(string(token), &Token{Value: string(token), ExpireTime: time.Now().Add(time.Hour * 24), Account: account}); exists {
 			token = utility.RandBytes(92)
 		} else {
 			break
@@ -182,15 +199,28 @@ func (t *TokenManager) GenerateClanAdminInvitationToken() string {
 	return string(token)
 }
 
+func (t *TokenManager) KickClanMember(clan string, name string) {
+	t.deletedAccount.Store(name, time.Now().Add(time.Hour*24*15))
+	database.GetInstance().KickClanMember(clan, name)
+}
+
+func (t *TokenManager) isDeleted(name string) bool {
+	_, ok := t.deletedAccount.Load(name)
+	return !ok
+}
+
 func DefaultAuthHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
-		account, err := GetAccountManager().GetAccountByToken(token)
+		t := GetAccountManager()
+		account, err := t.GetAccountByToken(token)
 		if err == nil {
 			if account.Permission == database.AdminAccount || account.Permission == database.ClanAdminAccount || account.Permission == database.NormalAccount {
-				c.Set("account", account)
-				c.Next()
-				return
+				if !t.isDeleted(account.Name) {
+					c.Set("account", account)
+					c.Next()
+					return
+				}
 			}
 		}
 	}
@@ -201,8 +231,9 @@ func DefaultAuthHandler(c *gin.Context) {
 func AdminAuthHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
-		account, err := GetAccountManager().GetAccountByToken(token)
-		if err == nil && account.Permission == 0 {
+		t := GetAccountManager()
+		account, err := t.GetAccountByToken(token)
+		if err == nil && account.Permission == 0 && !t.isDeleted(account.Name) {
 			c.Set("account", account)
 			c.Next()
 			return
@@ -215,8 +246,9 @@ func AdminAuthHandler(c *gin.Context) {
 func ClanAdminAuthHandler(c *gin.Context) {
 	token, err := c.Cookie("token")
 	if err == nil {
-		account, err := GetAccountManager().GetAccountByToken(token)
-		if err == nil && account.Permission <= database.ClanAdminAccount {
+		t := GetAccountManager()
+		account, err := t.GetAccountByToken(token)
+		if err == nil && account.Permission <= database.ClanAdminAccount && !t.isDeleted(account.Name) {
 			c.Set("account", account)
 			c.Next()
 			return
@@ -400,4 +432,64 @@ func InviteAccountInfoHandler(c *gin.Context) {
 		log.Panic("token isn't *Token")
 	}
 	c.JSON(http.StatusOK, gin.H{"Permission": _token.Account.Permission, "Clan": _token.Account.Clan})
+}
+
+func GetClanAccountInfoHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+	accounts := database.GetInstance().GetClanMembers(_account.Clan)
+	c.JSON(http.StatusOK, accounts)
+}
+
+func PromoteClanMemberHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+	var json Name
+	err := c.ShouldBind(&json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	database.GetInstance().PromoteClanMember(_account.Clan, json.Name)
+	c.JSON(http.StatusOK, "success")
+}
+
+func KickClanMemberHandler(c *gin.Context) {
+	account, exists := c.Get("account")
+	if !exists {
+		log.Println("can't get account")
+		c.Abort()
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	_account, ok := account.(*database.Account)
+	if !ok {
+		log.Panic("account is not a *Account")
+	}
+	var json Name
+	err := c.ShouldBind(&json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	GetAccountManager().KickClanMember(_account.Clan, _account.Name)
+	c.JSON(http.StatusOK, "success")
 }

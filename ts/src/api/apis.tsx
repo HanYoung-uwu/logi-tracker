@@ -281,6 +281,28 @@ const checkNameExist: (name: string) => Promise<boolean> = async (name: string) 
     return false;
 };
 
+const checkClanExist: (name: string) => Promise<boolean> = async (name: string) => {
+    let url = API_URL_ROOT + "/check_clan";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: name
+        })
+    });
+    if (Math.floor(res.status / 100) == 2) {
+        let json = await res.json();
+        return json.exist;
+    } else {
+        console.warn("check clan exist failed")
+    };
+    return false;
+};
+
 const login: (name: string, password: string) => Promise<Response> = (name, password) => {
     let url = API_URL_ROOT + "/login"
     let headers = {
@@ -316,6 +338,7 @@ export {
     deleteStockpile,
     refreshStockpile,
     checkNameExist,
+    checkClanExist,
     login,
     logout,
     fetchClanAdminInviteLink

@@ -13,11 +13,15 @@ import (
 	"hanyoung/logi-tracker/pkg/utility"
 )
 
+var FactionW = 1
+var FactionC = 2
+
 type DataBaseManager struct {
 	db              *sql.DB
 	itemLock        *sync.Map
 	locationLock    *sync.Map
 	registeredNames *sync.Map
+	registeredClans *sync.Map
 }
 
 // 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links,
@@ -78,6 +82,7 @@ func initDatabase() *sql.DB {
 	CREATE TABLE IF NOT EXISTS history (action INTEGER, user TEXT, clan TEXT, type TEXT, size INTEGER, location TEXT, time DATETIME);
 	CREATE INDEX IF NOT EXISTS idx_item_history on history (clan, location);
 	CREATE TABLE IF NOT EXISTS tokens (token TEXT, expire_time DATETIME, account_name TEXT);
+	CREATE TABLE IF NOT EXISTS clan (name TEXT PRIMARY KEY, faction INTEGER);
 	`
 	m_db.Exec(sqlStmt)
 	return m_db
@@ -91,14 +96,15 @@ func GetInstance() *DataBaseManager {
 			singleton = &DataBaseManager{initDatabase(),
 				&sync.Map{},
 				&sync.Map{},
+				&sync.Map{},
 				&sync.Map{}}
-			singleton.initAccount()
+			singleton.loadInfoToMemory()
 		}
 	}
 	return singleton
 }
 
-func (m *DataBaseManager) initAccount() {
+func (m *DataBaseManager) loadInfoToMemory() {
 	stmt, err := m.db.Prepare("select name from account")
 	if err != nil {
 		log.Panic(err)
@@ -115,6 +121,24 @@ func (m *DataBaseManager) initAccount() {
 			log.Panic(err)
 		}
 		m.registeredNames.Store(name, true)
+	}
+	stmt, err = m.db.Prepare("select name, faction from clan")
+	if err != nil {
+		log.Panic(err)
+	}
+	rows, err = stmt.Query()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	for rows.Next() {
+		var name string
+		var faction int
+		err = rows.Scan(&name, &faction)
+		if err != nil {
+			log.Panic(err)
+		}
+		m.registeredClans.Store(name, faction)
 	}
 }
 
@@ -355,6 +379,13 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 		log.Panic(err)
 	}
 	m.registeredNames.Store(name, true)
+	if permission == ClanAdminAccount {
+		m.registeredClans.Store(clan, true)
+		_, err = m.db.Exec("insert into clan(name, faction) values(?, 0)", clan)
+		if err != nil {
+			log.Print(err)
+		}
+	}
 	return nil
 }
 
@@ -543,6 +574,11 @@ func (m *DataBaseManager) IsNameExist(name string) bool {
 	return found
 }
 
+func (m *DataBaseManager) IsClanExist(name string) bool {
+	_, found := m.registeredClans.Load(name)
+	return found
+}
+
 func (m *DataBaseManager) SaveTokens(tokens []interface{}) {
 	stmt, err := m.db.Prepare("insert into tokens(token, expire_time, account_name) values(?, ?, ?)")
 	if err != nil {
@@ -600,4 +636,36 @@ func (m *DataBaseManager) LoadTokens() []Token {
 		result = append(result, Token{token, expire_time, account})
 	}
 	return result
+}
+
+func (m *DataBaseManager) GetClanMembers(clan string) []Account {
+	result := make([]Account, 0, 20)
+	row, err := m.db.Query("select name, permission from account where clan = ?", clan)
+	if err != nil {
+		log.Panic(err)
+	}
+	for row.Next() {
+		var name string
+		var permission int
+		err = row.Scan(&name, &permission)
+		if err != nil {
+			log.Panic(err)
+		}
+		result = append(result, Account{name, permission, clan})
+	}
+	return result
+}
+
+func (m *DataBaseManager) PromoteClanMember(clan string, name string) {
+	_, err := m.db.Exec("update account set permission = 1 where name = ? and clan = ?", name, clan)
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
+func (m *DataBaseManager) KickClanMember(clan string, name string) {
+	_, err := m.db.Exec("delete from account where name = ? and clan = ?", name, clan)
+	if err != nil {
+		log.Panic(err)
+	}
 }

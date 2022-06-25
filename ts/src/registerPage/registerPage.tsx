@@ -1,6 +1,6 @@
 import { Flex, HStack, VStack, Button, Spacer, Center, Input, Text, InputGroup, InputRightElement, Alert, AlertIcon } from '@chakra-ui/react'
 import React, { useEffect, useState, useContext } from 'react';
-import { checkNameExist, fetchInviteAccountInfo, InviteAccountInfo } from '../api/apis';
+import { checkNameExist, fetchInviteAccountInfo, InviteAccountInfo, checkClanExist } from '../api/apis';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL_ROOT } from '../config/config';
 import { AccountInfoContext } from '../login/accountInfoStore';
@@ -9,6 +9,7 @@ const RegisterPage = (props: any) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [clanName, setClanName] = useState('');
     const [accountInfo, setAccountInfo] = useState<InviteAccountInfo>({
         Clan: "",
         Permission: -1
@@ -17,6 +18,7 @@ const RegisterPage = (props: any) => {
     const [show, setShow] = useState(false);
     const [params, setParams] = useSearchParams();
     const [nameValid, setNameValid] = useState(false);
+    const [clanValid, setClanValid] = useState(false);
     const [passwordValid, setPasswordValid] = useState(false);
 
     const navigate = useNavigate();
@@ -78,9 +80,13 @@ const RegisterPage = (props: any) => {
     };
 
     const handleClan = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let info = accountInfo;
-        info.Clan = event.target.value;
-        setAccountInfo(info);
+        let name = event.target.value;
+        if (name != '') {
+            checkClanExist(name).then(exist => setClanValid(!exist));
+        } else {
+            setClanValid(false);
+        }
+        setClanName(name);
     };
 
     const getClanInput = () => {
@@ -88,7 +94,16 @@ const RegisterPage = (props: any) => {
             return (
                 <VStack width="100%">
                     <Text fontSize='24px' alignSelf="flex-start">Clan</Text>
-                    <Input onChange={handleClan} />
+                    <HStack width="100%">
+                        <Input onChange={handleClan} />
+                        <Alert fontSize='sm'
+                            fontStyle="italic"
+                            width={clanValid ? "10%" : "80%"}
+                            status={clanValid ? "success" : "error"}>
+                            <AlertIcon />
+                            {clanValid ? "" : clanName == '' ? "clan name empty" : "clan already existed"}
+                        </Alert>
+                    </HStack>
                 </VStack>
             );
         } else {

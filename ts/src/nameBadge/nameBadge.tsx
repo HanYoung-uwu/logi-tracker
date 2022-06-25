@@ -67,12 +67,12 @@ const NameBadge = observer((props: any) => {
             <PopoverContent>
                 <PopoverArrow />
                 <PopoverCloseButton onClick={() => onClose()} />
-                <PopoverHeader alignSelf="flex-start">{accountInfo.getAccountName()}</PopoverHeader>
-                <PopoverBody>Do you want to logout?</PopoverBody>
+                <PopoverHeader fontSize="20px" alignSelf="flex-start">{accountInfo.getAccountName()}</PopoverHeader>
+                <PopoverBody>{`Clan: ${accountInfo.getClan()}`}</PopoverBody>
                 <PopoverFooter display='flex' justifyContent="flex-end">
-                    <Button size='sm'
+                    <Button
                         bgColor="red.500"
-                        onClick={handleLogout}>Yes
+                        onClick={handleLogout}>Logout
                     </Button>
                 </PopoverFooter>
             </PopoverContent>

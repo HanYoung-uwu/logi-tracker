@@ -16,12 +16,13 @@ func main() {
 	basePath.GET("/logout", loginmiddleware.LogoutHandler)
 	basePath.POST("/login", loginmiddleware.LoginHandler)
 	basePath.POST("/register", loginmiddleware.CreateUserFromInvitationLinkHandler)
-	basePath.POST("/check_name", handlers.CheckAccountNameExist)
+	basePath.POST("/check_name", handlers.CheckAccountNameExistHandler)
+	basePath.POST("/check_clan", handlers.CheckClanExistHandler)
 	basePath.POST("/admin/create_admin", loginmiddleware.CreateAdminOnFirstRequestHandler)
 	basePath.GET("/invite_info", loginmiddleware.InviteAccountInfoHandler)
 
 	authorized := basePath.Group("/user", loginmiddleware.DefaultAuthHandler)
-	authorized.GET("/info", handlers.GetBasicAccountInfo)
+	authorized.GET("/info", handlers.GetBasicAccountInfoHandler)
 	authorized.GET("/all_items", handlers.GetAllItemsHandler)
 	authorized.POST("/create_stockpile", handlers.CreateStockpileHandler)
 	authorized.POST("/update_item", handlers.InsertOrUpdateItemHandler)
@@ -34,6 +35,9 @@ func main() {
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)
+	clanAdmins.GET("/member_info", loginmiddleware.GetClanAccountInfoHandler)
+	clanAdmins.POST("/kick_member", loginmiddleware.KickClanMemberHandler)
+	clanAdmins.POST("/promote_member", loginmiddleware.PromoteClanMemberHandler)
 
 	admins := basePath.Group("/admin", loginmiddleware.AdminAuthHandler)
 	admins.GET("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)

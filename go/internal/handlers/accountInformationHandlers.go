@@ -12,7 +12,7 @@ type NameQuery struct {
 	Name string `form:"name" json:"name" xml:"name"  binding:"required"`
 }
 
-func GetBasicAccountInfo(c *gin.Context) {
+func GetBasicAccountInfoHandler(c *gin.Context) {
 	account, exists := c.Get("account")
 	if !exists {
 		log.Println("can't get account")
@@ -27,7 +27,7 @@ func GetBasicAccountInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"Name": _account.Name, "Clan": _account.Clan, "Permission": _account.Permission})
 }
 
-func CheckAccountNameExist(c *gin.Context) {
+func CheckAccountNameExistHandler(c *gin.Context) {
 	var json NameQuery
 	err := c.ShouldBind(&json)
 	if err != nil {
@@ -35,6 +35,21 @@ func CheckAccountNameExist(c *gin.Context) {
 		return
 	}
 	switch database.GetInstance().IsNameExist(json.Name) {
+	case true:
+		c.JSON(http.StatusOK, gin.H{"exist": true})
+	case false:
+		c.JSON(http.StatusOK, gin.H{"exist": false})
+	}
+}
+
+func CheckClanExistHandler(c *gin.Context) {
+	var json NameQuery
+	err := c.ShouldBind(&json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "must supply name")
+		return
+	}
+	switch database.GetInstance().IsClanExist(json.Name) {
 	case true:
 		c.JSON(http.StatusOK, gin.H{"exist": true})
 	case false:
