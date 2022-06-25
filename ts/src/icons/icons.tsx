@@ -17,6 +17,7 @@ import Icon120mm from "./ammo/120mm.png"
 import Icon40mm from "./ammo/40mm.png"
 import Icon20mm from "./ammo/20mm.png"
 import Icon762mm from "./ammo/7.62mm.png"
+import IconLoughCaster from "./weapon/Loughcaster.png"
 import IconMortarAmmoIconShrapnel from "./ammo/MortarAmmoIconShrapnel.png"
 import IconShirts from "./med/Shirts.png"
 import IconBandages from "./med/Bandages.png"
@@ -381,7 +382,8 @@ const IconList = {
         { name: "9mm SMG", icon: Icon9mm_SMG },
         { name: "8mm", icon: Icon8mm },
         { name: "Buckshot", icon: IconBuckshot },
-        { name: "7.62mm", icon: Icon762mm }],
+        { name: "7.62mm", icon: Icon762mm },
+        { name: "No.2 Loughcaster", icon: IconLoughCaster }],
     "heavy arms": [
         { name: "Cremari Mortar", icon: IconMortar_0 },
         { name: "Bane 45", icon: IconBane_45 },
