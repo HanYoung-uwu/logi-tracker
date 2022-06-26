@@ -18,7 +18,7 @@ import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom'
 import { MdAccountCircle } from 'react-icons/md';
 import { fetchAccountInfo, logout } from '../api/apis';
-import { AccountInfoContext } from '../login/accountInfoStore';
+import { AccountInfoContext } from '../infoStore/accountInfoStore';
 
 const NameBadge = observer((props: any) => {
     let navigate = useNavigate();

@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Input, Flex, Text, HStack, VStack, InputRightElement, Button, InputGroup } from '@chakra-ui/react'
 import { API_URL_ROOT } from '../config/config';
 import { useNavigate, Navigate } from "react-router-dom";
-import { AccountInfoContext } from './accountInfoStore';
+import { AccountInfoContext } from '../infoStore/accountInfoStore';
 import { login } from '../api/apis';
 import { observer } from 'mobx-react-lite';
 

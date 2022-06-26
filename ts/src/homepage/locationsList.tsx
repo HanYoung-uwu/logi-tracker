@@ -24,9 +24,11 @@ import {
     useToast,
     HStack
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchLocations, addStockpile, deleteStockpile, refreshStockpile } from '../api/apis';
+import { LocationInfoContext, StockpileInfo } from "../infoStore/stockPileInfoStore";
 
 const LocationRow = ({ location, time, code, refreshFunc }: { location: string, time: Date, code: string, refreshFunc: () => void }) => {
     let expireTime = time.getTime() + 1000 * 3600 * 48;
@@ -54,7 +56,7 @@ const LocationRow = ({ location, time, code, refreshFunc }: { location: string, 
     );
 };
 
-const LocationsList = (props: any) => {
+const LocationsList = observer(() => {
     const [rows, setRows] = useState<Array<JSX.Element>>([]);
     const [stockpileName, setStockpileName] = useState('');
     const [stockpileCode, setStockpileCode] = useState('');
@@ -62,9 +64,12 @@ const LocationsList = (props: any) => {
     const navigate = useNavigate();
     const { onOpen, onClose, isOpen } = useDisclosure();
     const toast = useToast();
+    const stockpileInfo = useContext(LocationInfoContext);
+
     const refreshRows = async () => {
-        let locations = await fetchLocations();
-        if (locations) {
+        await stockpileInfo.refetchInfo();
+        let locations = stockpileInfo.locations;
+        if (locations.length !== 0) {
             locations.sort((a, b) => {
                 return a.time.valueOf() - b.time.valueOf();
             });
@@ -176,6 +181,6 @@ const LocationsList = (props: any) => {
             </VStack>
         </Center>
     );
-};
+});
 
 export { LocationsList };

@@ -5,7 +5,7 @@ import { ItemsList } from './itemsList';
 import { HistoryList } from './historyList';
 import { LocationsList } from './locationsList';
 import { useContext } from 'react';
-import { AccountInfoContext } from '../login/accountInfoStore';
+import { AccountInfoContext } from '../infoStore/accountInfoStore';
 
 const HomePage = observer((props: any) => {
     const accountInfo = useContext(AccountInfoContext);

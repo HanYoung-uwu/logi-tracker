@@ -32,11 +32,18 @@ import {
     PopoverFooter,
     PopoverArrow,
     PopoverCloseButton,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Icon
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { addItem, fetchAllItems, fetchLocations, Location, deleteItem, setItem } from '../api/apis'
+import { observer } from 'mobx-react-lite';
+import { useEffect, useState, useContext } from 'react';
+import { FaChevronDown } from 'react-icons/fa';
+import { addItem, fetchAllItems, ItemRecord, deleteItem, setItem } from '../api/apis'
 import ItemSelectPage from '../itemTable/itemTable';
+import { LocationInfoContext, StockpileInfo } from "../infoStore/stockPileInfoStore";
 
 const ItemTableRow = (props: { record: { location: string, size: number, item: string }, refreshCallback: () => any | null }) => {
     let record = props.record;
@@ -102,23 +109,29 @@ const ItemTableRow = (props: { record: { location: string, size: number, item: s
     </Tr>)
 };
 
-const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
-    const [rows, setRows] = useState(Array<JSX.Element>());
+const ItemsTable = ({ filterLocation, fetchRef }: { filterLocation: string, fetchRef: ((arg0: Function) => any) }) => {
+    const [rows, setRows] = useState(Array<ItemRecord>());
 
     const fetchAndConstructTable = async () => {
         let items = await fetchAllItems();
         if (items) {
-            setRows(items.map(record => <ItemTableRow record={record}
-                key={JSON.stringify(record)}
-                refreshCallback={fetchAndConstructTable} />));
+            setRows(items);
         }
     };
 
-    props?.fetchRef(fetchAndConstructTable);
+    fetchRef(fetchAndConstructTable);
 
     useEffect(() => {
         fetchAndConstructTable();
     }, []);
+
+    let filteredRows = rows;
+    if (filterLocation !== "") {
+        filteredRows = rows.filter(({ location }) => location === filterLocation);
+    }
+    let displayedRows = filteredRows.map(record => <ItemTableRow record={record}
+        key={JSON.stringify(record)}
+        refreshCallback={fetchAndConstructTable} />);
 
     return (
         <TableContainer width="100%">
@@ -132,17 +145,21 @@ const ItemsTable = (props: { fetchRef: ((arg0: Function) => any) } | null) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {rows}
+                    {displayedRows}
                 </Tbody>
             </Table>
         </TableContainer>);
 };
 
-const ItemsList = (props: any) => {
+const ItemsList = observer((props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [locations, setLocations] = useState<Array<Location>>([]);
     const [selectedLocation, setSelectedLocation] = useState<string>('');
+    const [filterLocation, setFilterLocation] = useState<string>('');
     const [quantity, setQuantity] = useState<number>(0);
+
+    const stockpileInfo = useContext(LocationInfoContext);
+
+    let locations = stockpileInfo.locations;
 
     let refreshTable: any;
 
@@ -157,15 +174,26 @@ const ItemsList = (props: any) => {
             refreshTable();
         }
     };
-    useEffect(() => {
-        const initLocation = async () => {
-            let res = await fetchLocations();
-            if (res != null) {
-                setLocations(res);
-            }
-        };
-        initLocation();
-    }, []);
+
+    const menuItems = () => {
+        let result = [
+            <MenuItem
+                onClick={() => setFilterLocation("")}
+                key="all">
+                All
+            </MenuItem>
+        ];
+        for (let i = 0; i < locations.length; i++) {
+            let { location } = locations[i];
+            result.push(
+                <MenuItem
+                    onClick={() => setFilterLocation(location)}
+                    key={location}>
+                    {location}
+                </MenuItem>);
+        }
+        return result;
+    };
 
     return (
         <Center>
@@ -174,8 +202,19 @@ const ItemsList = (props: any) => {
                 '70%', // 30em-48em
                 '60%', // 48em-62em
             ]}>
-                <Button alignSelf="flex-end" onClick={() => onOpen()}>Add Item</Button>
-                <ItemsTable fetchRef={refresh => refreshTable = refresh} />
+
+                <HStack alignSelf="flex-end">
+                    <Menu>
+                        <MenuButton as={Button} rightIcon={<Icon as={FaChevronDown} />}>
+                            {filterLocation === "" ? "Location" : filterLocation}
+                        </MenuButton>
+                        <MenuList>
+                            {menuItems()}
+                        </MenuList>
+                    </Menu>
+                    <Button onClick={() => onOpen()}>Add Item</Button>
+                </HStack>
+                <ItemsTable fetchRef={refresh => refreshTable = refresh} filterLocation={filterLocation} />
             </VStack>
             <Modal isOpen={isOpen} onClose={onClose} size='full'>
                 <ModalOverlay />
@@ -204,6 +243,6 @@ const ItemsList = (props: any) => {
             </Modal>
         </Center>
     );
-}
+});
 
 export { ItemsList }

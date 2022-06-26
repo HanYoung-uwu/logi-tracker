@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { checkNameExist, fetchInviteAccountInfo, InviteAccountInfo, checkClanExist } from '../api/apis';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL_ROOT } from '../config/config';
-import { AccountInfoContext } from '../login/accountInfoStore';
+import { AccountInfoContext } from '../infoStore/accountInfoStore';
 
 const RegisterPage = (props: any) => {
 

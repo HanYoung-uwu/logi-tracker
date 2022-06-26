@@ -343,4 +343,4 @@ export {
     logout,
     fetchClanAdminInviteLink
 };
-export type { Location, HistoryRecord, AccountInfo, InviteAccountInfo };
+export type { Location, HistoryRecord, AccountInfo, InviteAccountInfo, ItemRecord };

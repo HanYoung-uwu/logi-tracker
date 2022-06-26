@@ -16,7 +16,7 @@ import { useEffect, useState, useContext } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { fetchClanInviteLink, fetchClanAdminInviteLink } from '../api/apis';
 import { WEBSITE_ROOT } from '../config/config';
-import { AccountInfoContext } from '../login/accountInfoStore';
+import { AccountInfoContext } from '../infoStore/accountInfoStore';
 
 const InviteUserButton = observer((props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
