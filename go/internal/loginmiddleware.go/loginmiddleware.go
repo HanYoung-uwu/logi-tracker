@@ -206,7 +206,7 @@ func (t *TokenManager) KickClanMember(clan string, name string) {
 
 func (t *TokenManager) isDeleted(name string) bool {
 	_, ok := t.deletedAccount.Load(name)
-	return !ok
+	return ok
 }
 
 func DefaultAuthHandler(c *gin.Context) {

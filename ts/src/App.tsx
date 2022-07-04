@@ -21,6 +21,7 @@ import { AccountInfoContext, AccountInfo } from "./infoStore/accountInfoStore";
 import { LocationInfoContext, StockpileInfo } from "./infoStore/stockPileInfoStore";
 import AccountChangeObserver from "./infoStore/accountChangeObserver";
 import RootPage from "./rootPage/rootPage";
+import ClanManagePage from "./managerClan/clanManagerPage";
 
 export const App = () => (
   <BrowserRouter>
@@ -39,6 +40,7 @@ export const App = () => (
             <Route path="/" element={<RootPage />} />
             <Route path="/invite" element={<RegisterPage />} />
             <Route path="/items" element={<ItemsPage />} />
+            <Route path="/manage" element={<ClanManagePage />} />
           </Routes>
         </LocationInfoContext.Provider>
       </AccountInfoContext.Provider>

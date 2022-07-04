@@ -55,6 +55,56 @@ const fetchAccountInfo: () => Promise<AccountInfo | null> = async () => {
     }
 };
 
+const fetchClanMembers: () => Promise<Array<AccountInfo> | null> = async () => {
+    let url = API_URL_ROOT + "/clan/member_info"
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) != 2) {
+        return null;
+    } else {
+        return await res.json();
+    }
+};
+
+const promoteMember: (accountName: string) => Promise<boolean> = async (accountName) => {
+    let url = API_URL_ROOT + "/clan/promote_member";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: accountName
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
+const kickMember: (accountName: string) => Promise<boolean> = async (accountName) => {
+    let url = API_URL_ROOT + "/clan/kick_member";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            name: accountName
+        })
+    });
+    if (Math.floor(res.status / 100) != 2) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
 const fetchInviteAccountInfo: (token: string) => Promise<InviteAccountInfo | null> = async (token) => {
     let url = API_URL_ROOT + `/invite_info?token=${token}`;
     let res = await fetch(url);
@@ -341,6 +391,9 @@ export {
     checkClanExist,
     login,
     logout,
-    fetchClanAdminInviteLink
+    fetchClanAdminInviteLink,
+    fetchClanMembers,
+    promoteMember,
+    kickMember
 };
 export type { Location, HistoryRecord, AccountInfo, InviteAccountInfo, ItemRecord };
