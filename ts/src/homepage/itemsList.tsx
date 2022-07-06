@@ -39,11 +39,12 @@ import {
     Icon
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
-import { addItem, fetchAllItems, ItemRecord, deleteItem, setItem } from '../api/apis'
+import { addItem, deleteItem, setItem } from '../api/apis'
 import ItemSelectPage from '../itemTable/itemTable';
 import { LocationInfoContext, StockpileInfo } from "../infoStore/stockPileInfoStore";
+import { ItemsStoreContext } from '../infoStore/itemsStore';
 
 const ItemTableRow = (props: { record: { location: string, size: number, item: string }, refreshCallback: () => any | null }) => {
     let record = props.record;
@@ -109,29 +110,17 @@ const ItemTableRow = (props: { record: { location: string, size: number, item: s
     </Tr>)
 };
 
-const ItemsTable = ({ filterLocation, fetchRef }: { filterLocation: string, fetchRef: ((arg0: Function) => any) }) => {
-    const [rows, setRows] = useState(Array<ItemRecord>());
+const ItemsTable = observer(({ filterLocation, fetchRef }: { filterLocation: string, fetchRef: ((arg0: Function) => any) }) => {
+    const itemsStore = useContext(ItemsStoreContext);
 
-    const fetchAndConstructTable = async () => {
-        let items = await fetchAllItems();
-        if (items) {
-            setRows(items);
-        }
-    };
-
-    fetchRef(fetchAndConstructTable);
-
-    useEffect(() => {
-        fetchAndConstructTable();
-    }, []);
-
-    let filteredRows = rows;
+    let filteredRows = itemsStore.getItems();
     if (filterLocation !== "") {
-        filteredRows = rows.filter(({ location }) => location === filterLocation);
+        filteredRows = itemsStore.getItems().filter(({ location }) => location === filterLocation);
     }
+
     let displayedRows = filteredRows.map(record => <ItemTableRow record={record}
         key={JSON.stringify(record)}
-        refreshCallback={fetchAndConstructTable} />);
+        refreshCallback={() => itemsStore.refetchInfo()} />);
 
     return (
         <TableContainer width="100%">
@@ -149,7 +138,7 @@ const ItemsTable = ({ filterLocation, fetchRef }: { filterLocation: string, fetc
                 </Tbody>
             </Table>
         </TableContainer>);
-};
+});
 
 const ItemsList = observer((props: any) => {
     const { isOpen, onOpen, onClose } = useDisclosure();

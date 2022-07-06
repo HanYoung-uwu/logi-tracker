@@ -19,6 +19,7 @@ import RegisterPage from "./registerPage/registerPage";
 import ItemsPage from "./itemTable/itemTable";
 import { AccountInfoContext, AccountInfo } from "./infoStore/accountInfoStore";
 import { LocationInfoContext, StockpileInfo } from "./infoStore/stockPileInfoStore";
+import { ItemsStore, ItemsStoreContext } from "./infoStore/itemsStore";
 import AccountChangeObserver from "./infoStore/accountChangeObserver";
 import RootPage from "./rootPage/rootPage";
 import ClanManagePage from "./manageClan/clanManagePage";
@@ -28,20 +29,22 @@ export const App = () => (
     <ChakraProvider theme={Theme}>
       <AccountInfoContext.Provider value={new AccountInfo()}>
         <LocationInfoContext.Provider value={new StockpileInfo()}>
-          <AccountChangeObserver />
-          <HeaderPanel />
-          <Routes>
-            <Route path="/login" element={<LoginPage width={[
-              '100%', // 0-30em
-              '50%', // 30em-48em
-              '25%', // 48em-62em
-            ]} />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/" element={<RootPage />} />
-            <Route path="/invite" element={<RegisterPage />} />
-            <Route path="/items" element={<ItemsPage />} />
-            <Route path="/manage" element={<ClanManagePage />} />
-          </Routes>
+          <ItemsStoreContext.Provider value={new ItemsStore()}>
+            <AccountChangeObserver />
+            <HeaderPanel />
+            <Routes>
+              <Route path="/login" element={<LoginPage width={[
+                '100%', // 0-30em
+                '50%', // 30em-48em
+                '25%', // 48em-62em
+              ]} />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<RootPage />} />
+              <Route path="/invite" element={<RegisterPage />} />
+              <Route path="/items" element={<ItemsPage />} />
+              <Route path="/manage" element={<ClanManagePage />} />
+            </Routes>
+          </ItemsStoreContext.Provider>
         </LocationInfoContext.Provider>
       </AccountInfoContext.Provider>
     </ChakraProvider>
