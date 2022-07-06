@@ -21,7 +21,7 @@ import { AccountInfoContext, AccountInfo } from "./infoStore/accountInfoStore";
 import { LocationInfoContext, StockpileInfo } from "./infoStore/stockPileInfoStore";
 import AccountChangeObserver from "./infoStore/accountChangeObserver";
 import RootPage from "./rootPage/rootPage";
-import ClanManagePage from "./managerClan/clanManagerPage";
+import ClanManagePage from "./manageClan/clanManagePage";
 
 export const App = () => (
   <BrowserRouter>

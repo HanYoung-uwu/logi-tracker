@@ -2,6 +2,7 @@ import { Stack, HStack, VStack, Button, Spacer, Center, Icon } from '@chakra-ui/
 import { useNavigate } from 'react-router-dom';
 import { NameBadge } from '../nameBadge/nameBadge';
 import InviteUserButton from '../inviteUser/inviteUserButton';
+import ClanManageButton from '../manageClan/clanManageButton';
 
 const HeaderPanel = (props: any) => {
     let navigate = useNavigate();
@@ -20,6 +21,7 @@ const HeaderPanel = (props: any) => {
                     Logi Tracker
                 </Button>
                 <Spacer />
+                <ClanManageButton />
                 <InviteUserButton />
                 <NameBadge />
             </HStack>
