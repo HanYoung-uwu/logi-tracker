@@ -32,12 +32,14 @@ func main() {
 	authorized.POST("/set_item", handlers.SetItemHandler)
 	authorized.POST("/refresh_stockpile", handlers.RefreshStockpileHandler)
 	authorized.GET("/history", handlers.GetClanHistoryHandler)
+	authorized.GET("/faction", handlers.GetClanFactionHandler)
 
 	clanAdmins := basePath.Group("/clan", loginmiddleware.ClanAdminAuthHandler)
 	clanAdmins.GET("/invitation", loginmiddleware.GenerateInvitationLinkHandler)
 	clanAdmins.GET("/member_info", loginmiddleware.GetClanAccountInfoHandler)
 	clanAdmins.POST("/kick_member", loginmiddleware.KickClanMemberHandler)
 	clanAdmins.POST("/promote_member", loginmiddleware.PromoteClanMemberHandler)
+	clanAdmins.POST("/set_faction", handlers.SetClanFactionHandler)
 
 	admins := basePath.Group("/admin", loginmiddleware.AdminAuthHandler)
 	admins.GET("/invite_clan", loginmiddleware.GenerateClanAdminInvitationLinkHandler)

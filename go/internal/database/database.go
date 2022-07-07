@@ -24,15 +24,6 @@ type DataBaseManager struct {
 	registeredClans *sync.Map
 }
 
-// 0 is super admin, 1 is clan admin, 2 is ordinary memenber, 3 is temporary account for invitation links,
-// 4 is clan admin invitation links
-
-type Account struct {
-	Name       string
-	Permission int
-	Clan       string
-}
-
 var NormalAccount = 2
 var AdminAccount = 0
 var ClanAdminAccount = 1
@@ -66,7 +57,7 @@ type HistoryRecord struct {
 type Token struct {
 	Value      string
 	ExpireTime time.Time
-	Account    *Account
+	Account    *utility.Account
 }
 
 var lock = &sync.Mutex{}
@@ -392,7 +383,7 @@ func (m *DataBaseManager) AddAccount(name string, password string, clan string, 
 var ErrorNoAccount = errors.New("no account found")
 var ErrorIncorrectPassword = errors.New("incorrect password")
 
-func (m *DataBaseManager) GetAndValidateAccount(name string, password string) (*Account, error) {
+func (m *DataBaseManager) GetAndValidateAccount(name string, password string) (*utility.Account, error) {
 	stmt, err := m.db.Prepare("select password, permission, clan from account where name = ?")
 	if err != nil {
 		log.Panic(err)
@@ -413,10 +404,10 @@ func (m *DataBaseManager) GetAndValidateAccount(name string, password string) (*
 	if err != nil {
 		return nil, ErrorIncorrectPassword
 	}
-	return &Account{name, permission, clan}, nil
+	return &utility.Account{Name: name, Permission: permission, Clan: clan}, nil
 }
 
-func (m *DataBaseManager) GetAllItems(account *Account) []StockpileItem {
+func (m *DataBaseManager) GetAllItems(account *utility.Account) []StockpileItem {
 	clan := account.Clan
 
 	db := m.db
@@ -632,14 +623,14 @@ func (m *DataBaseManager) LoadTokens() []Token {
 		var clan string
 		var permission int
 		rows.Scan(&token, &expire_time, &account_name, &clan, &permission)
-		account := &Account{account_name, permission, clan}
+		account := &utility.Account{Name: account_name, Permission: permission, Clan: clan}
 		result = append(result, Token{token, expire_time, account})
 	}
 	return result
 }
 
-func (m *DataBaseManager) GetClanMembers(clan string) []Account {
-	result := make([]Account, 0, 20)
+func (m *DataBaseManager) GetClanMembers(clan string) []utility.Account {
+	result := make([]utility.Account, 0, 20)
 	row, err := m.db.Query("select name, permission from account where clan = ?", clan)
 	if err != nil {
 		log.Panic(err)
@@ -651,7 +642,7 @@ func (m *DataBaseManager) GetClanMembers(clan string) []Account {
 		if err != nil {
 			log.Panic(err)
 		}
-		result = append(result, Account{name, permission, clan})
+		result = append(result, utility.Account{Name: name, Permission: permission, Clan: clan})
 	}
 	return result
 }
@@ -668,4 +659,26 @@ func (m *DataBaseManager) KickClanMember(clan string, name string) {
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func (m *DataBaseManager) GetClanFaction(clan string) int {
+	faction, ok := m.registeredClans.Load(clan)
+	if !ok {
+		return 0
+	}
+	_faction, ok := faction.(int)
+	if !ok {
+		return 0
+	}
+	return _faction
+}
+
+func (m *DataBaseManager) SetClanFaction(clan string, faction int) {
+	m.registeredClans.LoadOrStore(clan, faction)
+	go func(clan string, faction int) {
+		_, err := m.db.Exec("update clan set faction = ? where clan = ?", faction, clan)
+		if err != nil {
+			log.Panic(err)
+		}
+	}(clan, faction)
 }

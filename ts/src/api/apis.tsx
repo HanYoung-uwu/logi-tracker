@@ -353,6 +353,34 @@ const checkClanExist: (name: string) => Promise<boolean> = async (name: string) 
     return false;
 };
 
+const fetchFaction: () => Promise<string | null> = async () => {
+    let url = API_URL_ROOT + "/user/faction";
+    let res = await fetch(url);
+    if (Math.floor(res.status / 100) == 2) {
+        let json = await res.json();
+        return json.faction;
+    }
+};
+
+const setFaction: (faction: 1 | 2) => Promise<boolean> = async (faction: 1 | 2) => {
+    let url = API_URL_ROOT + "/clan/set_faction";
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    let res = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            faction: faction
+        })
+    });
+    if (Math.floor(res.status / 100) == 2) {
+        return true;
+    }
+    return false;
+}
+
 const login: (name: string, password: string) => Promise<Response> = (name, password) => {
     let url = API_URL_ROOT + "/login"
     let headers = {
@@ -394,6 +422,8 @@ export {
     fetchClanAdminInviteLink,
     fetchClanMembers,
     promoteMember,
-    kickMember
+    kickMember,
+    fetchFaction,
+    setFaction
 };
 export type { Location, HistoryRecord, AccountInfo, InviteAccountInfo, ItemRecord };

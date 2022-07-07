@@ -13,6 +13,7 @@ import (
 )
 
 type Token = database.Token
+type Name = utility.Name
 
 type User struct {
 	Name        string `form:"Name" json:"Name" xml:"Name"  binding:"required"`
@@ -23,10 +24,6 @@ type User struct {
 
 type InviteToken struct {
 	Token string `form:"token" binding:"required"`
-}
-
-type Name struct {
-	Name string `json:"name"`
 }
 
 type TokenArrayWithMutex struct {
@@ -152,7 +149,7 @@ func (t *TokenManager) ValidateAccountAndGenerateToken(name string, password str
 
 var ErrorInvalideToken = errors.New("invalide token")
 
-func (t *TokenManager) GetAccountByToken(token string) (*database.Account, error) {
+func (t *TokenManager) GetAccountByToken(token string) (*utility.Account, error) {
 	val, found := t.tokens.Load(token)
 	if found {
 		m_token, ok := val.(*Token)
@@ -168,7 +165,7 @@ func (t *TokenManager) GetAccountByToken(token string) (*database.Account, error
 }
 
 func (t *TokenManager) GenerateInvitationToken(clan string) string {
-	account := &database.Account{Name: "", Permission: database.InvitationLinkAccount, Clan: clan}
+	account := &utility.Account{Name: "", Permission: database.InvitationLinkAccount, Clan: clan}
 
 	token := utility.RandBytes(92)
 	for {
@@ -184,7 +181,7 @@ func (t *TokenManager) GenerateInvitationToken(clan string) string {
 }
 
 func (t *TokenManager) GenerateClanAdminInvitationToken() string {
-	account := &database.Account{Name: "", Permission: database.ClanAdminInvitationLinkAccount, Clan: ""}
+	account := &utility.Account{Name: "", Permission: database.ClanAdminInvitationLinkAccount, Clan: ""}
 
 	token := utility.RandBytes(92)
 	for {
@@ -272,22 +269,13 @@ func CreateUserHandler(c *gin.Context) {
 	if len(json.Password) > 72 {
 		json.Password = json.Password[:71]
 	}
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	account := utility.GetAccount(c)
+	if account != nil {
+		database.GetInstance().AddAccount(json.Name, json.Password, account.Clan, 2)
+		c.JSON(200, gin.H{
+			"message": "succeed",
+		})
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-
-	database.GetInstance().AddAccount(json.Name, json.Password, _account.Clan, 2)
-	c.JSON(200, gin.H{
-		"message": "succeed",
-	})
 }
 
 func LoginHandler(c *gin.Context) {
@@ -348,7 +336,7 @@ func CreateUserFromInvitationLinkHandler(c *gin.Context) {
 			return
 		}
 		t.tokens.Delete(json.InviteToken)
-		newAccount := &database.Account{Name: json.Name, Permission: permission, Clan: json.Clan}
+		newAccount := &utility.Account{Name: json.Name, Permission: permission, Clan: json.Clan}
 		accessCookie := utility.RandBytes(256)
 		for {
 			token := Token{Value: string(accessCookie), ExpireTime: time.Now().Add(1000000000 * 3600 * 24 * 14), Account: newAccount}
@@ -376,20 +364,11 @@ func CreateUserFromInvitationLinkHandler(c *gin.Context) {
 }
 
 func GenerateInvitationLinkHandler(c *gin.Context) {
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	account := utility.GetAccount(c)
+	if account != nil {
+		token := GetAccountManager().GenerateInvitationToken(account.Clan)
+		c.JSON(http.StatusAccepted, gin.H{"token": token})
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-
-	token := GetAccountManager().GenerateInvitationToken(_account.Clan)
-	c.JSON(http.StatusAccepted, gin.H{"token": token})
 }
 
 func GenerateClanAdminInvitationLinkHandler(c *gin.Context) {
@@ -435,61 +414,37 @@ func InviteAccountInfoHandler(c *gin.Context) {
 }
 
 func GetClanAccountInfoHandler(c *gin.Context) {
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	account := utility.GetAccount(c)
+	if account != nil {
+		accounts := database.GetInstance().GetClanMembers(account.Clan)
+		c.JSON(http.StatusOK, accounts)
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-	accounts := database.GetInstance().GetClanMembers(_account.Clan)
-	c.JSON(http.StatusOK, accounts)
 }
 
 func PromoteClanMemberHandler(c *gin.Context) {
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	account := utility.GetAccount(c)
+	if account != nil {
+		var json Name
+		err := c.ShouldBind(&json)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		database.GetInstance().PromoteClanMember(account.Clan, json.Name)
+		c.JSON(http.StatusOK, "success")
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-	var json Name
-	err := c.ShouldBind(&json)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-	database.GetInstance().PromoteClanMember(_account.Clan, json.Name)
-	c.JSON(http.StatusOK, "success")
 }
 
 func KickClanMemberHandler(c *gin.Context) {
-	account, exists := c.Get("account")
-	if !exists {
-		log.Println("can't get account")
-		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
+	account := utility.GetAccount(c)
+	if account != nil {
+		var json Name
+		err := c.ShouldBind(&json)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		GetAccountManager().KickClanMember(account.Clan, account.Name)
+		c.JSON(http.StatusOK, "success")
 	}
-	_account, ok := account.(*database.Account)
-	if !ok {
-		log.Panic("account is not a *Account")
-	}
-	var json Name
-	err := c.ShouldBind(&json)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
-	}
-	GetAccountManager().KickClanMember(_account.Clan, _account.Name)
-	c.JSON(http.StatusOK, "success")
 }
